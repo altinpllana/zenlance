@@ -1,5 +1,7 @@
 <template>
   <v-container>
+    
+
     <v-row justify="center" align="center">
       <v-col cols="12" xs="12" sm="12" md="6" lg="6">
         <v-row justify="center">
@@ -24,14 +26,17 @@
                 v-model="password"
                 label="Password"
               ></v-text-field>
-              <v-btn block variant="flat" size="large" @click="login" color="primary"
+              <div class="text-center forgot-password">
+                <v-btn variant="text" @click="password">Forgotten password?</v-btn>
+              </div>
+              <v-btn block variant="flat" size="x-large" @click="login" color="primary"
                 >Login</v-btn
               >
 
               <div class="text-center mt-5">
                 <p>
-                  Already have an account?
-                  <v-btn variant="text" color="primary">Register</v-btn>
+                  Don't have an account?
+                  <v-btn variant="text" color="primary" @click="register">Register</v-btn>
                 </p>
               </div>
             </v-form>
@@ -55,6 +60,10 @@ export default {
     login() {
       router.push("/dashboard");
     },
+
+    register() {
+      router.push("/register");
+    },
   },
 };
 </script>
@@ -72,5 +81,9 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.forgot-password {
+  margin-bottom: 15px;
 }
 </style>
