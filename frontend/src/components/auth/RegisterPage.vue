@@ -11,7 +11,7 @@
               <h1>Register</h1>
               <p class="text-grey">Please enter your details.</p>
             </div>
-            <v-form>
+            <v-form @submit.prevent="register">
               <v-text-field
                 type="text"
                 variant="solo-filled"
@@ -30,7 +30,7 @@
                 v-model="password"
                 label="Password"
               ></v-text-field>
-              <v-btn block variant="flat" size="x-large" @click="login" color="primary"
+              <v-btn block variant="flat" size="x-large" type="submit" color="primary"
                 >Register</v-btn
               >
 
@@ -50,9 +50,12 @@
 
 <script>
 import router from "@/router/index.js";
+import axios from "axios";
+
 export default {
   data() {
     return {
+      name: "",
       email: "",
       password: "",
     };
@@ -61,9 +64,21 @@ export default {
     login() {
       router.push("/login");
     },
-
     register() {
-      router.push("/register");
+      axios
+        .post("http://localhost:4000/register", {
+          name: this.name,
+          email: this.email,
+          password: this.password,
+        })
+        .then((response) => {
+          console.log(response.data);
+          alert("User registered successfully!");
+        })
+        .catch((error) => {
+          console.error("Error registering user:", error.response.data.message);
+          alert("Error: " + error.response.data.message);
+        });
     },
   },
 };

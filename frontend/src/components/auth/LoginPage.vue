@@ -1,6 +1,8 @@
 <template>
   <v-container>
-    
+    <v-snackbar v-model="snackbar.show">
+      {{snackbar.text}}
+    </v-snackbar>
 
     <v-row justify="center" align="center">
       <v-col cols="12" xs="12" sm="12" md="6" lg="6">
@@ -27,12 +29,19 @@
                 label="Password"
               ></v-text-field>
               <div class="text-center forgot-password">
-                <v-btn variant="text" @click="password">Forgotten password?</v-btn>
+                <v-btn variant="text" @click="forgottenPassword"
+                  >Forgotten password?</v-btn
+                >
               </div>
-              <v-btn block variant="flat" size="x-large" @click="login" color="primary"
+              <v-btn
+                block
+                variant="flat"
+                size="x-large"
+                @click="login"
+                color="primary"
+                :disabled="isLoginDisabled"
                 >Login</v-btn
               >
-
               <div class="text-center mt-5">
                 <p>
                   Don't have an account?
@@ -49,16 +58,45 @@
 
 <script>
 import router from "@/router/index.js";
+import axios from "axios";
+
 export default {
   data() {
     return {
       email: "",
       password: "",
+      snackbar: {
+        show: false,
+        text: '',
+      }
     };
+  },
+  computed: {
+    isLoginDisabled() {
+      return !(this.email && this.password);
+    },
   },
   methods: {
     login() {
-      router.push("/dashboard");
+      axios
+        .post("http://localhost:4000/login", {
+          email: this.email,
+          password: this.password,
+        })
+        .then((response) => {
+          console.log(response)
+          router.push("/dashboard");
+          this.snackbar.show = true;
+          this.snackbar.text = response.data.message;
+        })
+        .catch((error) => {
+          console.error("Error logging in:", error.response.data.message);
+          alert("Error: " + error.response.data.message);
+        });
+    },
+
+    forgottenPassword() {
+      router.push("/forgotten-password");
     },
 
     register() {

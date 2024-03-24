@@ -1,74 +1,21 @@
+// index.js
+
 const express = require('express');
-const cors = require('cors');
-// const db = require('./db');
-
+const bodyParser = require('body-parser');
+const routes = require('./routes');
+const cors = require('cors'); // Import the cors package
 const app = express();
-app.use(cors());
-app.use(express.json());
+const PORT = 4000; // Change the port here
 
-app.listen(4000, () => {
-  console.log('Listening on port 4000!');
+app.use(bodyParser.json());
+app.use(cors()); // Use the cors middleware
+app.use('/', routes);
+
+// Handle GET request to /register
+app.get('/register', (req, res) => {
+  res.status(405).json({ message: 'Method Not Allowed' });
 });
 
-app.get('/', (req, res) => {
-  const { param1 } = req.query;
-
-  res.send('Hello World!<br>Param1 = ' + param1);
-});
-
-let nexPersonId = 3;
-const people = [
-  { id: 1, name: 'John', surname: 'Doe' },
-  { id: 2, name: 'Anna', surname: 'Dopey' },
-];
-
-app.get('/people', (req, res) => {
-  res.send(people);
-  // db.query('SELECT * FROM people', (error, results, fields) => {
-  //   if (error) {
-  //     console.log('Error: ', error);
-  //     res.status(500).json({ error: 'Internal Server Error' });
-  //     return
-  //   }
-  //   res.json(results);
-  // })
-});
-
-app.get('/people/:id', (req, res) => {
-  const personId = +req.params.id;
-
-  const person = people.find(person => person.id === personId);
-
-  if (!person) {
-    res.sendStatus(404);
-    return;
-  }
-
-  res.send(person);
-});
-
-app.post('/people', (req, res) => {
-  if (!req.body) {
-    res.status(400).json({ error: 'Body not specified' });
-    return;
-  }
-
-  if (!req.body.name) {
-    res.status(400).json({ error: 'No name specified' });
-    return;
-  }
-
-  if (!req.body.surname) {
-    res.status(400).json({ error: 'No surname specified' });
-    return;
-  }
-
-  const newPerson = {
-    ...req.body,
-    id: nexPersonId++
-  };
-
-  people.push(newPerson);
-
-  res.send(newPerson);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
