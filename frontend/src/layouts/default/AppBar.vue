@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
     <PersonalDetailsModal />
-    <v-navigation-drawer v-model="drawer" theme="dark" class="bg-black" permanent>
+    <v-navigation-drawer v-model="drawer" theme="dark" class="bg-primary" permanent>
       <template v-slot:prepend>
         <v-list-item
           lines="two"
