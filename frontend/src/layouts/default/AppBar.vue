@@ -17,7 +17,7 @@
             <v-icon :icon="item.icon"></v-icon>
           </template>
 
-          <v-list-item-title v-text="item.text"></v-list-item-title>
+          <v-list-item-title :to="item.link" v-text="item.text"></v-list-item-title>
         </v-list-item>
       </v-list>
 
@@ -52,7 +52,7 @@ export default {
   data: () => ({
     drawer: null,
     items: [
-      { text: "Dashboard", icon: "mdi-square-edit-outline", link: '/dashboard' },
+      { text: "Dashboard", icon: "mdi-view-dashboard-outline", link: '/dashboard' },
       { text: "Proposal Generator", icon: "mdi-square-edit-outline", link: '/proposal-generator' },
       { text: "Profile Optimization", icon: "mdi-account-circle-outline", link: '/profile-optimization' },
       { text: "Invoices", icon: "mdi-currency-usd", link: '/invoices' },
