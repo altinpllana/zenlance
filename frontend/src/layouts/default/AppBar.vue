@@ -1,12 +1,11 @@
 <template>
   <v-app id="inspire">
-    <PersonalDetailsModal />
+    <!-- <PersonalDetailsModal /> -->
     <v-navigation-drawer v-model="drawer" theme="dark" class="bg-primary" permanent>
       <template v-slot:prepend>
         <v-list-item
           lines="two"
           prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
-          subtitle="Logged in"
           title="Jane Smith"
         ></v-list-item>
       </template>
@@ -29,15 +28,19 @@
           </v-btn>
         </div>
       </template>
-    </v-navigation-drawer>  
+    </v-navigation-drawer>
 
     <v-app-bar>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>Proposal Generator</v-app-bar-title>
+      <v-app-bar-title>WorkWave</v-app-bar-title>
     </v-app-bar>
 
-    <v-main> </v-main>
+    <v-main>
+      <transition name="fade" mode="out-in">
+        <router-view></router-view>
+      </transition>
+    </v-main>
   </v-app>
 </template>
 
@@ -49,9 +52,15 @@ export default {
   data: () => ({
     drawer: null,
     items: [
-      { text: "Proposal Generator", icon: "mdi-square-edit-outline" },
-      { text: "Profile Optimization", icon: "mdi-account-circle-outline" },
-      { text: "Settings", icon: "mdi-cog-outline" },
+      { text: "Dashboard", icon: "mdi-square-edit-outline", link: '/dashboard' },
+      { text: "Proposal Generator", icon: "mdi-square-edit-outline", link: '/proposal-generator' },
+      { text: "Profile Optimization", icon: "mdi-account-circle-outline", link: '/profile-optimization' },
+      { text: "Invoices", icon: "mdi-currency-usd", link: '/invoices' },
+      { text: "Time Tracking", icon: "mdi-timer-pause-outline", link: '/time-tracking' },
+      { text: "Project Management", icon: "mdi-folder-multiple-outline", link: '/clients' },
+      { text: "Client Management", icon: "mdi-account-group-outline", link: '/projects' },
+      { text: "Reports", icon: "mdi-chart-line", link: '/reports' },
+      { text: "Settings", icon: "mdi-cog-outline", link: 'settings' },
     ],
     snackbar: false,
   }),

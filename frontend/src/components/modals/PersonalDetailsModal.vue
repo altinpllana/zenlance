@@ -6,7 +6,7 @@
         <v-row>
           <v-col cols="12" xs="12" sm="12" md="12" lg="12">
             <v-text-field
-              variant="solo-filled"
+              variant="solo"
               label="Upwork Profile Name"
             ></v-text-field>
           </v-col>
@@ -151,6 +151,6 @@ export default {
 }
 
 .clicked {
-  border: solid 1px #000;
+  border: solid 1px #3572EF;
 }
 </style>

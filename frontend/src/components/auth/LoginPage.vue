@@ -18,13 +18,13 @@
             <v-form>
               <v-text-field
                 type="text"
-                variant="solo-filled"
+                variant="solo"
                 v-model="email"
                 label="Email"
               ></v-text-field>
               <v-text-field
                 type="password"
-                variant="solo-filled"
+                variant="solo"
                 v-model="password"
                 label="Password"
               ></v-text-field>

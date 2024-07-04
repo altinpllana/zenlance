@@ -14,7 +14,7 @@
             <v-form @submit.prevent="forgotPassword">
               <v-text-field
                 type="email"
-                variant="solo-filled"
+                variant="solo"
                 v-model="email"
                 label="Email"
               ></v-text-field>
