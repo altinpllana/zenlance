@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-snackbar v-model="snackbar.show">
-      {{snackbar.text}}
+      {{ snackbar.text }}
     </v-snackbar>
 
     <v-row justify="center" align="center">
@@ -58,17 +58,18 @@
 
 <script>
 import router from "@/router/index.js";
-import axios from "axios";
+import { supabase } from "@/services/supabaseClient";
+import { nextTick } from "vue";
 
 export default {
   data() {
     return {
-      email: "",
-      password: "",
+      email: "ip@gmail.com",
+      password: "123123123",
       snackbar: {
         show: false,
-        text: '',
-      }
+        text: "",
+      },
     };
   },
   computed: {
@@ -77,22 +78,30 @@ export default {
     },
   },
   methods: {
-    login() {
-      axios
-        .post("http://localhost:4000/login", {
+    async login() {
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: this.email,
           password: this.password,
-        })
-        .then((response) => {
-          console.log(response)
-          router.push("/dashboard");
-          this.snackbar.show = true;
-          this.snackbar.text = response.data.message;
-        })
-        .catch((error) => {
-          console.error("Error logging in:", error.response.data.message);
-          alert("Error: " + error.response.data.message);
         });
+
+        if (error) {
+          console.error("Error logging in:", error.message);
+          alert("Error: " + error.message);
+          return;
+        }
+
+        // Store the access token in localStorage
+        localStorage.setItem("accessToken", data.session.access_token);
+
+        console.log("User logged in successfully:", data);
+        this.snackbar.show = true;
+        this.snackbar.text = "Login successful!";
+        this.$router.push("/dashboard");
+      } catch (error) {
+        console.error("Unexpected error:", error.message);
+        alert("Unexpected error: " + error.message);
+      }
     },
 
     forgottenPassword() {

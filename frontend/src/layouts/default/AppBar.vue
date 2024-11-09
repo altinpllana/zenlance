@@ -1,16 +1,13 @@
 <template>
   <v-app id="inspire">
     <!-- <PersonalDetailsModal /> -->
-    <v-navigation-drawer v-model="drawer" theme="dark" class="bg-primary" permanent>
-      <template v-slot:prepend>
-        <v-list-item
-          lines="two"
-          prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
-          title="Jane Smith"
-        ></v-list-item>
-      </template>
-
-      <v-divider></v-divider>
+    <v-navigation-drawer
+      v-model="drawer"
+      v-if="!['/login', '/register', '/forgotten-password'].includes($route.path)"
+      theme="light"
+      class="bg-primary"
+      permanent
+    >
       <v-list>
         <v-list-item v-for="(item, i) in items" :key="i" :value="item">
           <template v-slot:prepend>
@@ -30,7 +27,9 @@
       </template>
     </v-navigation-drawer>
 
-    <v-app-bar>
+    <v-app-bar
+      v-if="!['/login', '/register', '/forgotten-password'].includes($route.path)"
+    >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-app-bar-title>WorkWave</v-app-bar-title>
@@ -47,27 +46,57 @@
 <script>
 import router from "@/router/index.js";
 import PersonalDetailsModal from "../../components/modals/PersonalDetailsModal.vue";
+import { supabase } from "@/services/supabaseClient";
+
 export default {
   components: { PersonalDetailsModal },
   data: () => ({
     drawer: null,
     items: [
-      { text: "Dashboard", icon: "mdi-view-dashboard-outline", link: '/dashboard' },
-      { text: "Proposal Generator", icon: "mdi-square-edit-outline", link: '/proposal-generator' },
-      { text: "Profile Optimization", icon: "mdi-account-circle-outline", link: '/profile-optimization' },
-      { text: "Invoices", icon: "mdi-currency-usd", link: '/invoices' },
-      { text: "Time Tracking", icon: "mdi-timer-pause-outline", link: '/time-tracking' },
-      { text: "Project Management", icon: "mdi-folder-multiple-outline", link: '/clients' },
-      { text: "Client Management", icon: "mdi-account-group-outline", link: '/projects' },
-      { text: "Reports", icon: "mdi-chart-line", link: '/reports' },
-      { text: "Settings", icon: "mdi-cog-outline", link: 'settings' },
+      { text: "Dashboard", icon: "mdi-view-dashboard-outline", link: "/dashboard" },
+      {
+        text: "Proposal Generator",
+        icon: "mdi-square-edit-outline",
+        link: "/proposal-generator",
+      },
+      {
+        text: "Profile Optimization",
+        icon: "mdi-account-circle-outline",
+        link: "/profile-optimization",
+      },
+      // { text: "Invoices", icon: "mdi-currency-usd", link: "/invoices" },
+      // { text: "Time Tracking", icon: "mdi-timer-pause-outline", link: "/time-tracking" },
+      {
+        text: "Project Management",
+        icon: "mdi-folder-multiple-outline",
+        link: "/projects",
+      },
+      { text: "Client Management", icon: "mdi-account-group-outline", link: "/clients" },
+      { text: "Reports", icon: "mdi-chart-line", link: "/reports" },
+      { text: "Settings", icon: "mdi-cog-outline", link: "settings" },
     ],
     snackbar: false,
   }),
 
   methods: {
-    logOut() {
-      router.push("/login");
+    async logOut() {
+      try {
+        // Sign out from Supabase
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+          console.error("Error logging out:", error.message);
+          return;
+        }
+
+        // Clear access token from localStorage
+        localStorage.removeItem("accessToken");
+
+        // Redirect to login page
+        router.push("/login");
+      } catch (error) {
+        console.error("Unexpected error:", error.message);
+      }
     },
   },
 };

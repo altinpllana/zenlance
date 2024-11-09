@@ -13,14 +13,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap');
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
 
 *{
-    font-family: 'Manrope', sans-serif;
+    font-family: 'SF Pro Display', sans-serif;
 }
 
 .card{
     border: solid 1px #ededed !important;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: none !important;
+}
+
+.icon-box{
+    width: max-content;
+    padding: 15px;
+    border: solid 1px #ededed;
+    border-radius: 15px;
+    
 }

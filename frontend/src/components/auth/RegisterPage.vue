@@ -49,8 +49,8 @@
 </template>
 
 <script>
+import { supabase } from "@/services/supabaseClient.js";
 import router from "@/router/index.js";
-import axios from "axios";
 
 export default {
   data() {
@@ -64,21 +64,32 @@ export default {
     login() {
       router.push("/login");
     },
-    register() {
-      axios
-        .post("http://localhost:4000/register", {
-          name: this.name,
+    async register() {
+      try {
+        // Register the user with email, password, and full name in user_metadata
+        const { data, error } = await supabase.auth.signUp({
           email: this.email,
           password: this.password,
-        })
-        .then((response) => {
-          console.log(response.data);
-          alert("User registered successfully!");
-        })
-        .catch((error) => {
-          console.error("Error registering user:", error.response.data.message);
-          alert("Error: " + error.response.data.message);
+          options: {
+            data: {
+              name: this.name,
+            },
+          },
         });
+
+        if (error) {
+          console.error("Error registering user:", error.message);
+          alert("Error: " + error.message);
+          return;
+        }
+
+        alert(
+          "User registered successfully! Please check your email to confirm your account."
+        );
+      } catch (error) {
+        console.error("Unexpected error:", error.message);
+        alert("Unexpected error: " + error.message);
+      }
     },
   },
 };
