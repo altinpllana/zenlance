@@ -8,6 +8,9 @@
       class="bg-primary"
       permanent
     >
+      <div class="logo-holder">
+        <img v-if="drawer !== false" class="logo fadeIn" src="@/assets/zenlance-cropped.svg" />
+      </div>
       <v-list>
         <v-list-item v-for="(item, i) in items" :key="i" :value="item">
           <template v-slot:prepend>
@@ -32,7 +35,9 @@
     >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>WorkWave</v-app-bar-title>
+      <v-app-bar-title
+        ><img v-if="drawer == false" class="logo-dark fadeIn" src="@/assets/zenlance-black.svg"
+      /></v-app-bar-title>
     </v-app-bar>
 
     <v-main>

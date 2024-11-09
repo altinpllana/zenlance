@@ -7,8 +7,14 @@
           <v-col cols="12" xs="12" sm="12" md="12" lg="12">
             <v-text-field
               variant="solo"
-              label="Upwork Profile Name"
+              label="Upwork Profile URL"
             ></v-text-field>
+
+            <v-textarea
+              variant="solo"
+              rows="5"
+              label="Upwork Profile Description"
+            ></v-textarea>
           </v-col>
 
           <v-col cols="12">
