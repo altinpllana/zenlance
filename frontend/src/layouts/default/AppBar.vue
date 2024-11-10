@@ -9,15 +9,19 @@
       permanent
     >
       <div class="logo-holder">
-        <img v-if="drawer !== false" class="logo fadeIn" src="@/assets/zenlance-cropped.svg" />
+        <img
+          v-if="drawer !== false"
+          class="logo fadeIn"
+          src="@/assets/zenlance-cropped.svg"
+        />
       </div>
       <v-list>
-        <v-list-item v-for="(item, i) in items" :key="i" :value="item">
+        <v-list-item v-for="(item, i) in items" :key="i" :value="item" :to="item.link">
           <template v-slot:prepend>
             <v-icon :icon="item.icon"></v-icon>
           </template>
 
-          <v-list-item-title :to="item.link" v-text="item.text"></v-list-item-title>
+          <v-list-item-title v-text="item.text"></v-list-item-title>
         </v-list-item>
       </v-list>
 
@@ -36,7 +40,10 @@
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-app-bar-title
-        ><img v-if="drawer == false" class="logo-dark fadeIn" src="@/assets/zenlance-black.svg"
+        ><img
+          v-if="drawer == false"
+          class="logo-dark fadeIn"
+          src="@/assets/zenlance-black.svg"
       /></v-app-bar-title>
     </v-app-bar>
 
@@ -69,12 +76,17 @@ export default {
         icon: "mdi-account-circle-outline",
         link: "/profile-optimization",
       },
+      {
+        text: "Password Manager",
+        icon: "mdi-lock-check-outline",
+        link: "/password-manager",
+      },
       // { text: "Invoices", icon: "mdi-currency-usd", link: "/invoices" },
       // { text: "Time Tracking", icon: "mdi-timer-pause-outline", link: "/time-tracking" },
       {
         text: "Project Management",
         icon: "mdi-folder-multiple-outline",
-        link: "/projects",
+        link: "/project-management",
       },
       { text: "Client Management", icon: "mdi-account-group-outline", link: "/clients" },
       { text: "Reports", icon: "mdi-chart-line", link: "/reports" },

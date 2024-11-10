@@ -3,10 +3,58 @@ import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   {
+    path: "/",
+    name: "Dashboard",
+    component: () => import("@/views/DashboardView.vue"),
+    meta: { requiresAuth: true }, 
+  },
+  {
     path: "/dashboard",
     name: "Dashboard",
     component: () => import("@/views/DashboardView.vue"),
-    meta: { requiresAuth: true }, // Add meta field for routes that require auth
+    meta: { requiresAuth: true }, 
+  },
+  {
+    path: "/proposal-generator",
+    name: "Proposal Generator",
+    component: () => import("@/views/ProposalGeneratorView.vue"),
+    meta: { requiresAuth: true }, 
+  },
+  {
+    path: "/profile-optimizaton",
+    name: "Profile Optimization",
+    component: () => import("@/views/DashboardView.vue"),
+    meta: { requiresAuth: true }, 
+  },
+  {
+    path: "/password-manager",
+    name: "Password Manager",
+    component: () => import("@/views/PasswordManagerView.vue"),
+    meta: { requiresAuth: true }, 
+  },
+  {
+    path: "/project-management",
+    name: "Project Management",
+    component: () => import("@/views/DashboardView.vue"),
+    meta: { requiresAuth: true }, 
+  },
+  {
+    path: "/client-management",
+    name: "Client Management",
+    component: () => import("@/views/DashboardView.vue"),
+    meta: { requiresAuth: true }, 
+  },
+  {
+    path: "/reports",
+    name: "Reports",
+    component: () => import("@/views/DashboardView.vue"),
+    meta: { requiresAuth: true }, 
+  },
+  {
+    path: "/settings",
+    name: "settings",
+    component: () => import("@/views/DashboardView.vue"),
+    meta: { requiresAuth: true }, 
   },
   {
     path: "/login",

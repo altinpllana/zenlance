@@ -1,14 +1,17 @@
 <template>
   <v-container>
+    <v-snackbar v-model="snackbar.show">
+      {{ snackbar.text }}
+    </v-snackbar>
     <v-row justify="center" align="center">
       <v-col cols="12" xs="12" sm="12" md="6" lg="6">
         <v-row justify="center">
           <v-col cols="12" xs="12" sm="12" md="7" lg="7">
             <div class="welcome-text text-center mb-10">
               <div class="logo-container">
-                <v-img class="logo" src="@/assets/logo-pg.png" width="80" />
+                <img class="mb-4 fadeIn" width="350" src="@/assets/zenlance-black.svg" />
               </div>
-              <h1>Register</h1>
+              <h3>Register</h3>
               <p class="text-grey">Please enter your details.</p>
             </div>
             <v-form @submit.prevent="register">
@@ -58,6 +61,10 @@ export default {
       name: "",
       email: "",
       password: "",
+      snackbar: {
+        show: false,
+        text: "",
+      },
     };
   },
   methods: {
@@ -66,7 +73,6 @@ export default {
     },
     async register() {
       try {
-        // Register the user with email, password, and full name in user_metadata
         const { data, error } = await supabase.auth.signUp({
           email: this.email,
           password: this.password,
@@ -78,17 +84,17 @@ export default {
         });
 
         if (error) {
-          console.error("Error registering user:", error.message);
-          alert("Error: " + error.message);
+          this.snackbar.show = true;
+          this.snackbar.text = error.message;
           return;
         }
 
-        alert(
-          "User registered successfully! Please check your email to confirm your account."
-        );
+        this.snackbar.show = true;
+        this.snackbar.text = 'Registered Successfully';
+        
       } catch (error) {
-        console.error("Unexpected error:", error.message);
-        alert("Unexpected error: " + error.message);
+        this.snackbar.show = true;
+        this.snackbar.text = error.message;
       }
     },
   },

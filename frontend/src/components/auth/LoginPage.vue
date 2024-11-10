@@ -10,9 +10,9 @@
           <v-col cols="12" xs="12" sm="12" md="7" lg="7">
             <div class="welcome-text text-center mb-10">
               <div class="logo-container">
-                <v-img class="logo" src="@/assets/logo-pg.png" width="80" />
+                <img class="mb-4 fadeIn" width="350" src="@/assets/zenlance-black.svg" />
               </div>
-              <h1>Welcome Back</h1>
+              <h3>Welcome Back</h3>
               <p class="text-grey">Please enter your details.</p>
             </div>
             <v-form>
@@ -59,7 +59,6 @@
 <script>
 import router from "@/router/index.js";
 import { supabase } from "@/services/supabaseClient";
-import { nextTick } from "vue";
 
 export default {
   data() {
@@ -86,12 +85,11 @@ export default {
         });
 
         if (error) {
-          console.error("Error logging in:", error.message);
-          alert("Error: " + error.message);
+          this.snackbar.show = true
+          this.snackbar.text = error.message
           return;
         }
 
-        // Store the access token in localStorage
         localStorage.setItem("accessToken", data.session.access_token);
 
         console.log("User logged in successfully:", data);
@@ -99,8 +97,8 @@ export default {
         this.snackbar.text = "Login successful!";
         this.$router.push("/dashboard");
       } catch (error) {
-        console.error("Unexpected error:", error.message);
-        alert("Unexpected error: " + error.message);
+        this.snackbar.show = true
+          this.snackbar.text = error.message
       }
     },
 
