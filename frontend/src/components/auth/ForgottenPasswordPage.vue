@@ -37,6 +37,7 @@
 
 <script>
 import router from "@/router/index.js";
+import { supabase } from "@/services/supabaseClient";
 import axios from "axios";
 
 export default {
@@ -50,18 +51,20 @@ export default {
       router.push("/login");
     },
 
-    forgotPassword() {
-      axios
-        .post("http://localhost:4000/forgot-password", { email: this.email })
-        .then((response) => {
-          console.log(response.data);
-          alert("Password reset email sent successfully!");
-          router.push("/login");
-        })
-        .catch((error) => {
-          console.error("Error sending reset email:", error.response.data.message);
-          alert("Error: " + error.response.data.message);
-        });
+    async forgotPassword() {
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(this.email);
+        if (error) {
+          this.errorMessage = error.message;
+          this.successMessage = "";
+        } else {
+          this.successMessage = "Password reset email sent successfully.";
+          this.errorMessage = "";
+        }
+      } catch (error) {
+        this.errorMessage = "An unexpected error occurred.";
+        this.successMessage = "";
+      }
     },
   },
 };

@@ -1,31 +1,31 @@
 <template>
   <v-container class="mt-2">
     <v-row>
-      <v-col cols="12" xl="4" lg="4" md="4" sm="4" xs="4">
+      <v-col cols="12" xl="3" lg="3" md="3" sm="3" xs="3">
         <div class="card">
           <div class="card-body">
             <div class="icon-box mt-1 mb-4">
               <v-icon color="#08090a">mdi-account-multiple-outline</v-icon>
             </div>
-            <h3 class="total-customers">Total Customers</h3>
+            <h3 class="total-customers">Total Clients</h3>
             <h1 class="total-customers-counter">0</h1>
           </div>
         </div>
       </v-col>
 
-      <v-col cols="12" xl="4" lg="4" md="4" sm="4" xs="4">
+      <v-col cols="12" xl="3" lg="3" md="3" sm="3" xs="3">
         <div class="card">
           <div class="card-body">
             <div class="icon-box mt-1 mb-4">
               <v-icon color="#08090a">mdi-text-box-multiple-outline</v-icon>
             </div>
-            <h3 class="total-customers">Total Proposal Generated</h3>
+            <h3 class="total-customers">Total Generated Proposals</h3>
             <h1 class="total-customers-counter">0</h1>
           </div>
         </div>
       </v-col>
 
-      <v-col cols="12" xl="4" lg="4" md="4" sm="4" xs="4">
+      <v-col cols="12" xl="3" lg="3" md="3" sm="3" xs="3">
         <div class="card">
           <div class="card-body">
             <div class="icon-box mt-1 mb-4">
@@ -33,6 +33,18 @@
             </div>
             <h3 class="total-customers">Total Projects</h3>
             <h1 class="total-customers-counter">0</h1>
+          </div>
+        </div>
+      </v-col>
+
+      <v-col cols="12" xl="3" lg="3" md="3" sm="3" xs="3">
+        <div class="card">
+          <div class="card-body">
+            <div class="icon-box mt-1 mb-4">
+              <v-icon color="#08090a">mdi-currency-usd</v-icon>
+            </div>
+            <h3 class="total-customers">12-month Earnings</h3>
+            <h1 class="total-customers-counter">$25,399</h1>
           </div>
         </div>
       </v-col>
@@ -94,7 +106,7 @@
         <div class="card">
           <div class="card-body">
             <h6 class="total-customers">To Do</h6>
-            
+
             <v-text-field
               v-model="newTask"
               label="Add a new task"
