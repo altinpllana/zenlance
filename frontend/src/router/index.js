@@ -15,6 +15,12 @@ const routes = [
     meta: { requiresAuth: true }, 
   },
   {
+    path: "/tasks",
+    name: "Tasks",
+    component: () => import("@/views/TasksView.vue"),
+    meta: { requiresAuth: true }, 
+  },
+  {
     path: "/proposal-generator",
     name: "Proposal Generator",
     component: () => import("@/views/ProposalGeneratorView.vue"),

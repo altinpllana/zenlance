@@ -39,12 +39,36 @@
     >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title
-        ><img
+      <v-app-bar-title>
+        <img
           v-if="drawer == false"
           class="logo-dark fadeIn"
           src="@/assets/zenlance-black.svg"
-      /></v-app-bar-title>
+        />
+
+        <v-menu offset-y bottom :close-on-content-click="true">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon class="ml-2" color="primary" v-bind="attrs" v-on="on">
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item @click="addTask">
+              <v-list-item-title>Add Task</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="addProject">
+              <v-list-item-title>Add Project</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="addClient">
+              <v-list-item-title>Add Client</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="addPassword">
+              <v-list-item-title>Add Password</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-app-bar-title>
     </v-app-bar>
 
     <v-main>
@@ -72,6 +96,13 @@ export default {
         link: "/proposal-generator",
       },
       {
+        text: "Project Management",
+        icon: "mdi-folder-multiple-outline",
+        link: "/project-management",
+      },
+      { text: "Client Management", icon: "mdi-account-group-outline", link: "/clients" },
+      { text: "Tasks", icon: "mdi-checkbox-multiple-marked-outline", link: "/tasks" },
+      {
         text: "Profile Optimization",
         icon: "mdi-account-circle-outline",
         link: "/profile-optimization",
@@ -83,12 +114,6 @@ export default {
       },
       // { text: "Invoices", icon: "mdi-currency-usd", link: "/invoices" },
       // { text: "Time Tracking", icon: "mdi-timer-pause-outline", link: "/time-tracking" },
-      {
-        text: "Project Management",
-        icon: "mdi-folder-multiple-outline",
-        link: "/project-management",
-      },
-      { text: "Client Management", icon: "mdi-account-group-outline", link: "/clients" },
       { text: "Reports", icon: "mdi-chart-line", link: "/reports" },
       { text: "Settings", icon: "mdi-cog-outline", link: "settings" },
     ],
