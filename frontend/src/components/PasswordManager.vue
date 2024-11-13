@@ -112,11 +112,13 @@ export default {
       ],
       passwords: [],
       showAddPasswordModal: false,
-      showConfirmEditModal: false, // Confirmation modal for editing
+      showConfirmDeleteModal: false, // Confirmation modal for deletion
       newPassword: { id: null, url: "", username: "", password: "" },
       showPassword: false,
       passwordStrength: 0,
       isEditing: false, // Flag to track if editing or adding
+      userId: null, // Store the user ID here
+      passwordToDelete: null, // Track the password to delete
     };
   },
   computed: {
@@ -126,9 +128,23 @@ export default {
       return "Strong";
     },
   },
+  async created() {
+    // Fetch the current user's ID from Supabase Auth
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      this.userId = user.id;
+      this.fetchPasswords(); // Fetch passwords only after obtaining the user ID
+    }
+  },
   methods: {
     async fetchPasswords() {
-      const { data, error } = await supabase.from("password_manager").select("*");
+      if (!this.userId) return;
+
+      const { data, error } = await supabase
+        .from("password_manager")
+        .select("*")
+        .eq("user_id", this.userId);
+
       if (error) {
         console.error("Error fetching passwords:", error);
       } else {
@@ -140,6 +156,11 @@ export default {
       this.newPassword = { id: null, url: "", username: "", password: "" };
       this.passwordStrength = 0;
       this.showAddPasswordModal = true;
+    },
+    openEditPasswordModal(item) {
+      this.isEditing = true; // Set to edit mode
+      this.newPassword = { ...item }; // Populate with the selected item data
+      this.showAddPasswordModal = true; // Open modal for editing
     },
     closeAddPasswordModal() {
       this.showAddPasswordModal = false;
@@ -166,7 +187,6 @@ export default {
         (hasNumber ? 20 : 0) +
         (hasSpecial ? 15 : 0);
     },
-
     async savePassword() {
       if (this.newPassword.url && this.newPassword.password) {
         if (this.isEditing) {
@@ -178,7 +198,8 @@ export default {
               username: this.newPassword.username,
               password: this.newPassword.password,
             })
-            .eq("id", this.newPassword.id);
+            .eq("id", this.newPassword.id)
+            .eq("user_id", this.userId); // Ensure only this user's password is updated
 
           if (error) {
             console.error("Error updating password:", error);
@@ -187,12 +208,13 @@ export default {
             this.fetchPasswords();
           }
         } else {
-          // Insert a new password
+          // Insert a new password with the user ID
           const { data, error } = await supabase.from("password_manager").insert([
             {
               url: this.newPassword.url,
               username: this.newPassword.username,
               password: this.newPassword.password,
+              user_id: this.userId, // Associate the password with the user
             },
           ]);
 
@@ -205,35 +227,33 @@ export default {
         }
       }
     },
-    confirmEditPassword(item) {
-      this.newPassword = { ...item }; // Populate form with selected item’s data
-      this.isEditing = true; // Set to edit mode
-      this.showConfirmEditModal = true; // Show confirmation modal
+    confirmDeletePassword(item) {
+      this.passwordToDelete = item; // Set the item to be deleted
+      this.showConfirmDeleteModal = true; // Show confirmation modal
     },
-    async editPassword() {
-      this.showConfirmEditModal = false; // Hide confirmation modal
-      this.showAddPasswordModal = true; // Open editing modal
-    },
-    async removePassword(item) {
-      const { error } = await supabase
-        .from("password_manager")
-        .delete()
-        .eq("id", item.id);
+    async deletePassword() {
+      if (this.passwordToDelete) {
+        const { error } = await supabase
+          .from("password_manager")
+          .delete()
+          .eq("id", this.passwordToDelete.id)
+          .eq("user_id", this.userId); // Ensure only this user's password is deleted
 
-      if (error) {
-        console.error("Error deleting password:", error);
-      } else {
-        this.passwords = this.passwords.filter((password) => password.id !== item.id);
+        if (error) {
+          console.error("Error deleting password:", error);
+        } else {
+          this.showConfirmDeleteModal = false;
+          this.fetchPasswords();
+        }
       }
     },
-  },
-  async mounted() {
-    await this.fetchPasswords();
   },
   watch: {
     "newPassword.password": "checkPasswordStrength",
   },
 };
 </script>
+
+
 
 <style scoped></style>

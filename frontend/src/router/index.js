@@ -17,7 +17,7 @@ const routes = [
   {
     path: "/tasks",
     name: "Tasks",
-    component: () => import("@/views/TasksView.vue"),
+    component: () => import("@/views/TasksManagementView.vue"),
     meta: { requiresAuth: true }, 
   },
   {
