@@ -105,7 +105,7 @@ export default {
       // { text: "Invoices", icon: "mdi-currency-usd", link: "/invoices" },
       // { text: "Time Tracking", icon: "mdi-timer-pause-outline", link: "/time-tracking" },
       { text: "Reports", icon: "mdi-chart-line", link: "/reports" },
-      { text: "Settings", icon: "mdi-cog-outline", link: "settings" },
+      { text: "Settings", icon: "mdi-cog-outline", link: "/settings" },
     ],
     snackbar: false,
   }),
