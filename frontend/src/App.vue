@@ -13,3 +13,8 @@ export default {
   created() {},
 };
 </script>
+
+<style>
+.v-list-item--active{
+}
+</style>

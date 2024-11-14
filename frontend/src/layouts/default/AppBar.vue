@@ -6,7 +6,6 @@
       v-if="!['/login', '/register', '/forgotten-password'].includes($route.path)"
       theme="light"
       class="bg-primary"
-      permanent
     >
       <div class="logo-holder">
         <img
@@ -25,10 +24,12 @@
         </v-list-item>
       </v-list>
 
+      <v-divider></v-divider>
+
       <template v-slot:append>
         <div class="pa-2">
-          <v-btn class="bg-white" block @click="logOut()">
-            Logout <v-icon class="ml-2" icon="mdi-exit-to-app"></v-icon>
+          <v-btn class="bg-white" block>
+            Help Center <v-icon class="ml-2" icon="mdi-help"></v-icon>
           </v-btn>
         </div>
       </template>
@@ -45,30 +46,19 @@
           class="logo-dark fadeIn"
           src="@/assets/zenlance-black.svg"
         />
-
-        <v-menu offset-y bottom :close-on-content-click="true">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn icon class="ml-2" color="primary" v-bind="attrs" v-on="on">
-              <v-icon>mdi-plus</v-icon>
-            </v-btn>
-          </template>
-
-          <v-list>
-            <v-list-item @click="addTask">
-              <v-list-item-title>Add Task</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="addProject">
-              <v-list-item-title>Add Project</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="addClient">
-              <v-list-item-title>Add Client</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="addPassword">
-              <v-list-item-title>Add Password</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
       </v-app-bar-title>
+      <v-spacer></v-spacer>
+
+      <div class="user-info">
+        <v-list-item
+          lines="two"
+          prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
+          title="John Smith"
+        ></v-list-item>
+      </div>
+      <v-btn class="bg-white" @click="logOut()">
+        Logout <v-icon class="ml-2" icon="mdi-exit-to-app"></v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-main>
@@ -149,5 +139,15 @@ export default {
   box-shadow: none !important;
   border-bottom: solid 1px !important;
   border-color: rgba(var(--v-border-color), var(--v-border-opacity)) !important;
+}
+
+.quick-action {
+  padding: 20px 0px 20px 0px !important;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.quick-action:hover {
+  padding: 0px;
 }
 </style>

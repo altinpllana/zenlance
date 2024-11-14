@@ -6,7 +6,7 @@
           <div class="card-body">
             <h5 class="task-status text-uppercase">{{ status }}</h5>
             <div
-              @click.stop="drawer = !drawer"
+              @click.stop="showTaskDetails(task.id)"
               class="card single-task mt-5"
               v-for="task in tasks"
               :key="task.id"
@@ -17,7 +17,6 @@
               </div>
             </div>
             <div class="button-holder mt-4 d-grid">
-              <!-- Pass the status to the openAddTaskModal method -->
               <v-btn variant="text" color="primary" @click="openAddTaskModal(status)">
                 <v-icon>mdi-plus</v-icon>Add Task
               </v-btn>
@@ -26,6 +25,16 @@
         </div>
       </v-col>
     </v-row>
+
+    <v-navigation-drawer v-model="taskDetails" temporary location="right" width="700">
+      <v-container>
+        <h4 class="task-name">Task Name</h4>
+        <span class="task-status">Status <span class="ml-2 badge bg-primary">TO DO</span></span>
+        <div class="task-description mt-4">
+          <v-textarea variant="solo" label="Description"></v-textarea>
+        </div>
+      </v-container>
+    </v-navigation-drawer>
 
     <v-dialog v-model="showAddTaskModal" max-width="500px">
       <v-card>
@@ -78,6 +87,7 @@ export default {
         Review: [],
         Done: [],
       },
+      taskDetails: null,
     };
   },
   async created() {
@@ -103,6 +113,11 @@ export default {
         default:
           return "To Do";
       }
+    },
+
+    async showTaskDetails(id){
+      alert(id);
+      this.taskDetails = true;
     },
 
     async fetchTasks() {
