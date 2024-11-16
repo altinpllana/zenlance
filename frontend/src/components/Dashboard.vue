@@ -8,7 +8,7 @@
               <v-icon color="#08090a">mdi-account-multiple-outline</v-icon>
             </div>
             <h3 class="total-customers">Total Clients</h3>
-            <h1 class="total-customers-counter">0</h1>
+            <h1 class="total-customers-counter">{{ totalClients }}</h1>
           </div>
         </div>
       </v-col>
@@ -41,10 +41,10 @@
         <div class="card">
           <div class="card-body">
             <div class="icon-box mt-1 mb-4">
-              <v-icon color="#08090a">mdi-currency-usd</v-icon>
+              <v-icon color="#08090a">mdi-checkbox-multiple-marked-outline</v-icon>
             </div>
-            <h3 class="total-customers">12-month Earnings</h3>
-            <h1 class="total-customers-counter">$25,399</h1>
+            <h3 class="total-customers">Ongoing Tasks</h3>
+            <h1 class="total-customers-counter">{{ ongoingTasks }}</h1>
           </div>
         </div>
       </v-col>
@@ -52,19 +52,23 @@
       <v-col cols="12" xl="6" lg="6" md="6" sm="6" xs="6">
         <div class="card">
           <div class="card-body">
-            <h6 class="total-customers">Clients List</h6>
-            <v-data-table
-              :headers="headers.text"
-              :items="clients"
-              :items-per-page="5"
-              :hide-default-header="true"
-              :hide-default-footer="true"
-            >
-              <template v-slot:[`item.name`]="{ item }"> {{ item.name }} </template>
-              <template v-slot:[`item.email`]="{ item }">
-                {{ item.email }}
+            <h6 class="total-clients">Clients List</h6>
+            <v-data-table items-per-page="5" :headers="headersClients" :items="clients">
+              <template v-slot:[`item.client_name`]="{ item }">
+                <p class="text-start">{{ item.client_name }}</p>
               </template>
-              <template v-slot:[`item.price`]="{ item }"> ${{ item.price }} </template>
+              <template v-slot:[`item.email`]="{ item }">
+                <p class="text-start">{{ item.email }}</p>
+              </template>
+              <template v-slot:[`item.phone`]="{ item }">
+                <p class="text-start">{{ item.phone }}</p>
+              </template>
+              <template v-slot:[`item.country`]="{ item }">
+                <p class="text-start">{{ item.country }}</p>
+              </template>
+              <template v-slot:[`item.created_at`]="{ item }">
+                <p class="text-start">{{ item.created_at }}</p>
+              </template>
             </v-data-table>
           </div>
         </div>
@@ -75,8 +79,8 @@
           <div class="card-body">
             <h6 class="total-customers">Projects List</h6>
             <v-data-table
-              :headers="headers.text"
-              :items="clients"
+              :headers="headersProjects"
+              :items="projects"
               :items-per-page="5"
               :hide-default-header="true"
               :hide-default-footer="true"
@@ -139,6 +143,8 @@
 </template>
 
 <script>
+import { supabase } from "@/services/supabaseClient";
+
 export default {
   name: "Dashboard",
   data() {
@@ -148,25 +154,91 @@ export default {
         { text: "Project", value: "project" },
         { text: "Price", value: "price" },
       ],
-      clients: [
-        { name: "John Doe", project: "johndoe@example.com", price: "450" },
-        { name: "Jane Smith", project: "janesmith@example.com", price: "450" },
-        { name: "Jane Smith", project: "janesmith@example.com", price: "450" },
+      headersClients: [
+        { title: "Name", value: "client_name", align: "start" },
+        { title: "Email", value: "email", align: "start" },
+        { title: "Phone", value: "phone", align: "start" },
+        { title: "Country", value: "country", align: "start" },
       ],
       newTask: "",
       tasks: [],
+
+      totalClients: 0,
+      ongoingTasks: 0,
+
+      clients: [],
     };
+  },
+
+  async mounted() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      this.userId = user.id;
+      this.fetchTotalClients();
+      this.fetchOngoingTasks();
+      this.fetchClients();
+    }
   },
 
   methods: {
     addTask() {
       if (this.newTask.trim() !== "") {
         this.tasks.push(this.newTask);
-        this.newTask = ""; // Clear the input field
+        this.newTask = "";
       }
     },
     removeTask(index) {
       this.tasks.splice(index, 1);
+    },
+
+    async fetchClients() {
+      if (!this.userId) return;
+
+      const { data, error } = await supabase
+        .from("clients")
+        .select("*")
+        .eq("user_id", this.userId);
+
+      if (error) {
+        console.error("Error fetching passwords:", error);
+      } else {
+        this.clients = data;
+      }
+    },
+
+    async fetchTotalClients() {
+      try {
+        const { count, error } = await supabase
+          .from("clients")
+          .select("*", { count: "exact" })
+          .eq("user_id", this.userId);
+        if (error) {
+          console.error("Error fetching client count:", error);
+        } else {
+          this.totalClients = count;
+        }
+      } catch (err) {
+        console.error("Unexpected error:", err);
+      }
+    },
+
+    async fetchOngoingTasks() {
+      try {
+        const { count, error } = await supabase
+          .from("tasks")
+          .select("*", { count: "exact" })
+          .eq("user_id", this.userId);
+
+        if (error) {
+          console.error("Error fetching client count:", error);
+        } else {
+          this.ongoingTasks = count;
+        }
+      } catch (err) {
+        console.error("Unexpected error:", err);
+      }
     },
   },
 };

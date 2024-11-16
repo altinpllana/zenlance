@@ -16,6 +16,9 @@
               <template v-slot:[`item.phone`]="{ item }">
                 <p class="text-start">{{ item.phone }}</p>
               </template>
+              <template v-slot:[`item.country`]="{ item }">
+                <p class="text-start">{{ item.country }}</p>
+              </template>
               <template v-slot:[`item.created_at`]="{ item }">
                 <p class="text-start">{{ item.created_at }}</p>
               </template>
@@ -94,6 +97,7 @@
 
 <script>
 import { supabase } from "@/services/supabaseClient";
+
 export default {
   data() {
     return {
@@ -101,6 +105,7 @@ export default {
         { title: "Name", value: "client_name", align: "start" },
         { title: "Email", value: "email", align: "start" },
         { title: "Phone", value: "phone", align: "start" },
+        { title: "Country", value: "country", align: "start" },
         { title: "Date Created", value: "created_at" },
         {
           title: "Actions",

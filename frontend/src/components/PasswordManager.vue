@@ -20,7 +20,7 @@
                 <v-btn class="mr-2" icon small @click="editPassword(item)"
                   ><v-icon>mdi-pencil</v-icon></v-btn
                 >
-                <v-btn icon small @click="showConfirmDeleteModal(item)"
+                <v-btn icon small @click="confirmDeletePassword(item)"
                   ><v-icon>mdi-delete</v-icon></v-btn
                 >
               </template>
@@ -37,7 +37,7 @@
               <v-btn text color="red" @click="showConfirmDeleteModal = false"
                 >Cancel</v-btn
               >
-              <v-btn text color="green" @click="removePassword(item)">Delete</v-btn>
+              <v-btn text color="green" @click="deletePassword(item)">Delete</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -84,7 +84,12 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn text color="red" @click="closeAddPasswordModal">Cancel</v-btn>
-              <v-btn text color="green" @click="savePassword">Save</v-btn>
+              <v-btn v-if="isEditing != true" text color="green" @click="savePassword"
+                >Save</v-btn
+              >
+              <v-btn v-if="isEditing == true" text color="green" @click="updatePassword"
+                >Update</v-btn
+              >
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -112,13 +117,13 @@ export default {
       ],
       passwords: [],
       showAddPasswordModal: false,
-      showConfirmDeleteModal: false, // Confirmation modal for deletion
+      showConfirmDeleteModal: false,
       newPassword: { id: null, url: "", username: "", password: "" },
       showPassword: false,
       passwordStrength: 0,
-      isEditing: false, // Flag to track if editing or adding
-      userId: null, // Store the user ID here
-      passwordToDelete: null, // Track the password to delete
+      isEditing: false,
+      userId: null,
+      passwordToDelete: null,
     };
   },
   computed: {
@@ -129,11 +134,12 @@ export default {
     },
   },
   async created() {
-    // Fetch the current user's ID from Supabase Auth
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) {
       this.userId = user.id;
-      this.fetchPasswords(); // Fetch passwords only after obtaining the user ID
+      this.fetchPasswords();
     }
   },
   methods: {
@@ -152,17 +158,20 @@ export default {
       }
     },
     openAddPasswordModal() {
-      this.isEditing = false; // Set to add mode
+      this.isEditing = false;
       this.newPassword = { id: null, url: "", username: "", password: "" };
       this.passwordStrength = 0;
       this.showAddPasswordModal = true;
     },
-    openEditPasswordModal(item) {
-      this.isEditing = true; // Set to edit mode
-      this.newPassword = { ...item }; // Populate with the selected item data
-      this.showAddPasswordModal = true; // Open modal for editing
+    editPassword(item) {
+      this.isEditing = true;
+      this.newPassword = { ...item };
+      this.showAddPasswordModal = true;
     },
     closeAddPasswordModal() {
+      this.showAddPasswordModal = false;
+    },
+    closeEditPasswordModal() {
       this.showAddPasswordModal = false;
     },
     generatePassword() {
@@ -187,49 +196,50 @@ export default {
         (hasNumber ? 20 : 0) +
         (hasSpecial ? 15 : 0);
     },
-    async savePassword() {
-      if (this.newPassword.url && this.newPassword.password) {
-        if (this.isEditing) {
-          // Update existing password
-          const { error } = await supabase
-            .from("password_manager")
-            .update({
-              url: this.newPassword.url,
-              username: this.newPassword.username,
-              password: this.newPassword.password,
-            })
-            .eq("id", this.newPassword.id)
-            .eq("user_id", this.userId); // Ensure only this user's password is updated
 
-          if (error) {
-            console.error("Error updating password:", error);
-          } else {
-            this.closeAddPasswordModal();
-            this.fetchPasswords();
-          }
+    async updatePassword() {
+      if (this.isEditing == true) {
+        const { error } = await supabase
+          .from("password_manager")
+          .update({
+            url: this.newPassword.url,
+            username: this.newPassword.username,
+            password: this.newPassword.password,
+          })
+          .eq("id", this.newPassword.id)
+          .eq("user_id", this.userId);
+
+        if (error) {
+          console.error("Error saving password:", error);
         } else {
-          // Insert a new password with the user ID
-          const { data, error } = await supabase.from("password_manager").insert([
-            {
-              url: this.newPassword.url,
-              username: this.newPassword.username,
-              password: this.newPassword.password,
-              user_id: this.userId, // Associate the password with the user
-            },
-          ]);
+          this.closeEditPasswordModal();
+          this.fetchPasswords();
+        }
+      }
+    },
 
-          if (error) {
-            console.error("Error saving password:", error);
-          } else {
-            this.closeAddPasswordModal();
-            this.fetchPasswords();
-          }
+    async savePassword() {
+      if (this.isEditing != true) {
+        const { data, error } = await supabase.from("password_manager").insert([
+          {
+            url: this.newPassword.url,
+            username: this.newPassword.username,
+            password: this.newPassword.password,
+            user_id: this.userId,
+          },
+        ]);
+
+        if (error) {
+          console.error("Error saving password:", error);
+        } else {
+          this.closeAddPasswordModal();
+          this.fetchPasswords();
         }
       }
     },
     confirmDeletePassword(item) {
-      this.passwordToDelete = item; // Set the item to be deleted
-      this.showConfirmDeleteModal = true; // Show confirmation modal
+      this.passwordToDelete = item;
+      this.showConfirmDeleteModal = true; 
     },
     async deletePassword() {
       if (this.passwordToDelete) {
@@ -237,7 +247,7 @@ export default {
           .from("password_manager")
           .delete()
           .eq("id", this.passwordToDelete.id)
-          .eq("user_id", this.userId); // Ensure only this user's password is deleted
+          .eq("user_id", this.userId); 
 
         if (error) {
           console.error("Error deleting password:", error);
@@ -253,7 +263,5 @@ export default {
   },
 };
 </script>
-
-
 
 <style scoped></style>

@@ -91,6 +91,8 @@ export default {
 
         this.snackbar.show = true;
         this.snackbar.text = 'Registered Successfully';
+
+        this.login();
         
       } catch (error) {
         this.snackbar.show = true;

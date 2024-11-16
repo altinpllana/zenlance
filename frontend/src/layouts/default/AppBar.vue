@@ -53,7 +53,7 @@
         <v-list-item
           lines="two"
           prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
-          title="John Smith"
+          :title="this.userInfo?.user_metadata.name"
         ></v-list-item>
       </div>
       <v-btn icon class="bg-white" @click="logOut()"
@@ -90,7 +90,11 @@ export default {
         icon: "mdi-folder-multiple-outline",
         link: "/project-management",
       },
-      { text: "Client Management", icon: "mdi-account-group-outline", link: "/client-management" },
+      {
+        text: "Client Management",
+        icon: "mdi-account-group-outline",
+        link: "/client-management",
+      },
       { text: "Tasks", icon: "mdi-checkbox-multiple-marked-outline", link: "/tasks" },
       {
         text: "Profile Optimization",
@@ -108,7 +112,18 @@ export default {
       { text: "Settings", icon: "mdi-cog-outline", link: "/settings" },
     ],
     snackbar: false,
+    userInfo: null,
   }),
+
+  async created() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      this.userInfo = user;
+      console.log("user", user);
+    }
+  },
 
   methods: {
     async logOut() {
