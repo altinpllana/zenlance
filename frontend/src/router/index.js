@@ -8,12 +8,6 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/",
-    name: "Dashboard",
-    component: () => import("@/views/DashboardView.vue"),
-    meta: { requiresAuth: true },
-  },
-  {
     path: "/dashboard",
     name: "Dashboard",
     component: () => import("@/views/DashboardView.vue"),
@@ -52,7 +46,7 @@ const routes = [
   {
     path: "/client-management",
     name: "Client Management",
-    component: () => import("@/views/DashboardView.vue"),
+    component: () => import("@/views/ClientManagementView.vue"),
     meta: { requiresAuth: true },
   },
   {

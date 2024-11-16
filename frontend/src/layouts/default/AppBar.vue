@@ -56,9 +56,9 @@
           title="John Smith"
         ></v-list-item>
       </div>
-      <v-btn class="bg-white" @click="logOut()">
-        Logout <v-icon class="ml-2" icon="mdi-exit-to-app"></v-icon>
-      </v-btn>
+      <v-btn icon class="bg-white" @click="logOut()"
+        ><v-icon class="ml-2" icon="mdi-exit-to-app"></v-icon
+      ></v-btn>
     </v-app-bar>
 
     <v-main>
@@ -90,7 +90,7 @@ export default {
         icon: "mdi-folder-multiple-outline",
         link: "/project-management",
       },
-      { text: "Client Management", icon: "mdi-account-group-outline", link: "/clients" },
+      { text: "Client Management", icon: "mdi-account-group-outline", link: "/client-management" },
       { text: "Tasks", icon: "mdi-checkbox-multiple-marked-outline", link: "/tasks" },
       {
         text: "Profile Optimization",
