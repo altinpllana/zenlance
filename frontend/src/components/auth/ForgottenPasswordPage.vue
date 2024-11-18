@@ -6,9 +6,9 @@
           <v-col cols="12" xs="12" sm="12" md="7" lg="7">
             <div class="welcome-text text-center mb-10">
               <div class="logo-container">
-                <v-img class="logo" src="@/assets/logo-pg.png" width="80" />
+                <img class="mb-4 fadeIn" width="350" src="@/assets/zenlance-black.svg" />
               </div>
-              <h1>Forgot Password</h1>
+              <h3>Reset Password</h3>
               <p class="text-grey">Please enter your email address.</p>
             </div>
             <v-form @submit.prevent="forgotPassword">
@@ -36,9 +36,7 @@
 </template>
 
 <script>
-import router from "@/router/index.js";
 import { supabase } from "@/services/supabaseClient";
-import axios from "axios";
 
 export default {
   data() {
@@ -47,13 +45,12 @@ export default {
     };
   },
   methods: {
-    login() {
-      router.push("/login");
-    },
-
     async forgotPassword() {
       try {
-        const { error } = await supabase.auth.resetPasswordForEmail(this.email);
+        const { error } = await supabase.auth.api.resetPasswordForEmail(this.email, {
+          redirectTo: "http://localhost:3000/reset-password", // Update for your reset password page
+        });
+
         if (error) {
           this.errorMessage = error.message;
           this.successMessage = "";
@@ -62,6 +59,7 @@ export default {
           this.errorMessage = "";
         }
       } catch (error) {
+        console.error("Unexpected error:", error);
         this.errorMessage = "An unexpected error occurred.";
         this.successMessage = "";
       }

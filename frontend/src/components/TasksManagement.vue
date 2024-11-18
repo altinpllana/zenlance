@@ -29,7 +29,9 @@
     <v-navigation-drawer v-model="taskDetails" temporary location="right" width="700">
       <v-container>
         <h4 class="task-name">Task Name</h4>
-        <span class="task-status">Status <span class="ml-2 badge bg-primary">TO DO</span></span>
+        <span class="task-status"
+          >Status <span class="ml-2 badge bg-primary">TO DO</span></span
+        >
         <div class="task-description mt-4">
           <v-textarea variant="solo" label="Description"></v-textarea>
         </div>
@@ -50,6 +52,14 @@
             v-model="newTask.task_description"
             required
           ></v-textarea>
+
+          <v-select
+            label="Project"
+            v-model="newTask.task_status"
+            :items="statusOptions"
+            required
+          ></v-select>
+
           <v-select
             label="Select Status"
             v-model="newTask.task_status"
@@ -115,7 +125,7 @@ export default {
       }
     },
 
-    async showTaskDetails(id){
+    async showTaskDetails(id) {
       alert(id);
       this.taskDetails = true;
     },

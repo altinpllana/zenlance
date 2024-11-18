@@ -76,6 +76,11 @@ const routes = [
     name: "Forgotten Password",
     component: () => import("@/views/ForgottenPassword.vue"),
   },
+  {
+    path: "/reset-password",
+    name: "Reset Password",
+    component: () => import("@/views/ResetPasswordView.vue"),
+  },
 ];
 
 const router = createRouter({
@@ -101,3 +106,4 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router;
+

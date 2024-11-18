@@ -1,5 +1,8 @@
 <template>
   <AppBar />
+  <footer class="text-end app-footer">
+    <p class="text-end text-muted">Made with ❤️ by <a class="text-decoration-none text-black" href="https://bombstart.tech/">Bombstart.tech</a></p>
+  </footer>
 </template>
 
 <script>
@@ -15,6 +18,6 @@ export default {
 </script>
 
 <style>
-.v-list-item--active{
+.v-list-item--active {
 }
 </style>
