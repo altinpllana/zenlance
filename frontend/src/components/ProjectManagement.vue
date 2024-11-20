@@ -59,22 +59,46 @@
                 required
               ></v-text-field>
 
-              <v-text-field
-                variant="solo"
+              <v-select
+                :items="clients"
                 v-model="newProject.client"
-                label="Client"
-              ></v-text-field>
+                label="Select Client"
+                item-title="text"
+                item-value="id"
+                variant="solo"
+              >
+                <template #selection="{ item }">
+                  <span> {{ item.props.title.client_name }}</span>
+                </template>
+                <template #item="{ item, props }">
+                  <v-list-item v-bind="props">
+                    <template #title>
+                      <span>
+                        {{ item.props.title.client_name }}
+                      </span>
+                    </template>
+                  </v-list-item>
+                </template>
+              </v-select>
+
+              <v-date-input
+                v-model="newProject.start_date"
+                label="Select Start Date"
+                prepend-icon=""
+                variant="solo"
+              ></v-date-input>
+
+              <v-date-input
+                v-model="newProject.end_date"
+                label="Select End Date"
+                prepend-icon=""
+                variant="solo"
+              ></v-date-input>
 
               <v-text-field
                 variant="solo"
-                v-model="newProject.phone"
-                label="Phone"
-              ></v-text-field>
-
-              <v-text-field
-                variant="solo"
-                v-model="newProject.country"
-                label="Country"
+                v-model="newProject.status"
+                label="Status"
               ></v-text-field>
             </v-card-text>
 
@@ -120,20 +144,21 @@ export default {
       showConfirmDeleteModal: false,
       newProject: {
         project_name: "",
-        client: "",
-        billing_type: "",
+        client: 1,
+        billing_type: "fixed",
         status: "",
-        total_rate: "",
-        estimated_hours: "",
-        hourly_rate: "",
-        start_date: "",
-        end_date: "",
-        description: "",
+        total_rate: "100",
+        estimated_hours: "10",
+        hourly_rate: "15",
+        start_date: null,
+        end_date: null,
+        description: "test",
       },
       isEditing: false,
       userId: null,
       projectToDelete: null,
       projectId: null,
+      clients: [],
     };
   },
 
@@ -144,8 +169,10 @@ export default {
     if (user) {
       this.userId = user.id;
       this.fetchProjects();
+      this.fetchClients();
     }
   },
+
   methods: {
     async fetchProjects() {
       if (!this.userId) return;
@@ -158,23 +185,45 @@ export default {
       if (error) {
         console.error("Error fetching passwords:", error);
       } else {
-        this.clients = data;
+        this.projects = data;
       }
     },
+
+    async fetchClients() {
+      const { data, error } = await supabase
+        .from("clients")
+        .select("id, client_name") // Adjust the fields to match your database
+        .eq("user_id", this.userId); // Add any necessary filters
+
+      if (error) {
+        console.error("Error fetching clients:", error);
+      } else {
+        this.clients = data;
+        // for (let $i = 0; data.length > 0; $i++) {
+        //   this.clients.push({
+        //     text: data[$i].client_name,
+        //     value: data[$i].id,
+        //   });
+
+        //   console.log(this.clients);
+        // }
+      }
+    },
+
     openAddProjectModal() {
       this.isEditing = false;
-      this.newProject = {
-        project_name: "",
-        client: "",
-        billing_type: "",
-        status: "",
-        total_rate: "",
-        estimated_hours: "",
-        hourly_rate: "",
-        start_date: "",
-        end_date: "",
-        description: "",
-      };
+      // this.newProject = {
+      //   project_name: "",
+      //   client: null,
+      //   billing_type: "",
+      //   status: "",
+      //   total_rate: "",
+      //   estimated_hours: "",
+      //   hourly_rate: "",
+      //   start_date: null,
+      //   end_date: null,
+      //   description: "",
+      // };
       this.showAddProjectModal = true;
     },
     openEditProjectModal(item) {

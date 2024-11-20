@@ -32,7 +32,7 @@
               <v-icon color="#08090a">mdi-folder-multiple-outline</v-icon>
             </div>
             <h3 class="total-customers">Total Projects</h3>
-            <h1 class="total-customers-counter">0</h1>
+            <h1 class="total-customers-counter">{{ totalProjects }}</h1>
           </div>
         </div>
       </v-col>
@@ -165,7 +165,7 @@ export default {
 
       totalClients: 0,
       ongoingTasks: 0,
-
+      totalProjects: 0,
       clients: [],
     };
   },
@@ -179,6 +179,7 @@ export default {
       this.fetchTotalClients();
       this.fetchOngoingTasks();
       this.fetchClients();
+      this.fetchTotalProjects();
     }
   },
 
@@ -205,6 +206,21 @@ export default {
         console.error("Error fetching passwords:", error);
       } else {
         this.clients = data;
+      }
+    },
+
+    async fetchTotalProjects() {
+      if (!this.userId) return;
+
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*", { count: "exact" })
+        .eq("user_id", this.userId);
+
+      if (error) {
+        console.error("Error fetching passwords:", error);
+      } else {
+        this.totalProjects = data;
       }
     },
 

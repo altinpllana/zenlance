@@ -40,7 +40,7 @@ const routes = [
   {
     path: "/project-management",
     name: "Project Management",
-    component: () => import("@/views/DashboardView.vue"),
+    component: () => import("@/views/ProjectManagementView.vue"),
     meta: { requiresAuth: true },
   },
   {

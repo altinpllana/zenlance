@@ -26,15 +26,29 @@
       </v-col>
     </v-row>
 
-    <v-navigation-drawer v-model="taskDetails" temporary location="right" width="700">
-      <v-container>
-        <h4 class="task-name">Task Name</h4>
-        <span class="task-status"
-          >Status <span class="ml-2 badge bg-primary">TO DO</span></span
-        >
+    <!-- Task Details Drawer -->
+    <v-navigation-drawer
+      v-model="taskDetailsDrawer"
+      temporary
+      location="right"
+      width="700"
+    >
+      <v-container v-if="selectedTask">
+        <h4 class="task-name">{{ selectedTask.task_name }}</h4>
+        <span class="task-status">
+          Status <span class="ml-2 badge bg-primary">{{ selectedTask.task_status }}</span>
+        </span>
         <div class="task-description mt-4">
-          <v-textarea variant="solo" label="Description"></v-textarea>
+          <v-textarea
+            variant="solo"
+            label="Description"
+            v-model="selectedTask.task_description"
+            readonly
+          ></v-textarea>
         </div>
+      </v-container>
+      <v-container v-else>
+        <p>Loading task details...</p>
       </v-container>
     </v-navigation-drawer>
 
@@ -52,13 +66,6 @@
             v-model="newTask.task_description"
             required
           ></v-textarea>
-
-          <v-select
-            label="Project"
-            v-model="newTask.task_status"
-            :items="statusOptions"
-            required
-          ></v-select>
 
           <v-select
             label="Select Status"
@@ -97,7 +104,8 @@ export default {
         Review: [],
         Done: [],
       },
-      taskDetails: null,
+      taskDetailsDrawer: false,
+      selectedTask: null, // To hold the selected task details
     };
   },
   async created() {
@@ -126,8 +134,24 @@ export default {
     },
 
     async showTaskDetails(id) {
-      alert(id);
-      this.taskDetails = true;
+      this.taskDetailsDrawer = true;
+      this.selectedTask = null; // Clear previous task details
+
+      try {
+        const { data, error } = await supabase
+          .from("tasks")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) {
+          console.error("Error fetching task details:", error);
+        } else {
+          this.selectedTask = data;
+        }
+      } catch (err) {
+        console.error("Error:", err);
+      }
     },
 
     async fetchTasks() {
