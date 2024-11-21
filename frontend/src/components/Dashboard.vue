@@ -210,17 +210,18 @@ export default {
     },
 
     async fetchTotalProjects() {
-      if (!this.userId) return;
-
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*", { count: "exact" })
-        .eq("user_id", this.userId);
-
-      if (error) {
-        console.error("Error fetching passwords:", error);
-      } else {
-        this.totalProjects = data;
+      try {
+        const { count, error } = await supabase
+          .from("projects")
+          .select("*", { count: "exact" })
+          .eq("user_id", this.userId);
+        if (error) {
+          console.error("Error fetching client count:", error);
+        } else {
+          this.totalProjects = count;
+        }
+      } catch (err) {
+        console.error("Unexpected error:", err);
       }
     },
 

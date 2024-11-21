@@ -19,6 +19,11 @@
               <template v-slot:[`item.country`]="{ item }">
                 <p class="text-start">{{ item.country }}</p>
               </template>
+              <template v-slot:[`item.status`]="{ item }">
+                <p class="text-start" v-if="item.status == false">Inactive</p>
+
+                <p class="text-start" v-if="item.status == true">Active</p>
+              </template>
               <template v-slot:[`item.created_at`]="{ item }">
                 <p class="text-start">{{ item.created_at }}</p>
               </template>
@@ -76,6 +81,8 @@
                 v-model="newClient.country"
                 label="Country"
               ></v-text-field>
+              <v-label>Active Client</v-label>
+              <v-switch color="primary" inset v-model="newClient.status"></v-switch>
             </v-card-text>
 
             <v-card-actions>
@@ -106,6 +113,7 @@ export default {
         { title: "Email", value: "email", align: "start" },
         { title: "Phone", value: "phone", align: "start" },
         { title: "Country", value: "country", align: "start" },
+        { title: "Status", value: "status", align: "start" },
         { title: "Date Created", value: "created_at" },
         {
           title: "Actions",
@@ -118,7 +126,7 @@ export default {
       clients: [],
       showAddClientModal: false,
       showConfirmDeleteModal: false,
-      newClient: { client_name: "", email: "", phone: "", country: "" },
+      newClient: { client_name: "", email: "", phone: "", country: "", status: false },
       isEditing: false,
       userId: null,
       clientToDelete: null,
@@ -152,7 +160,13 @@ export default {
     },
     openAddClientModal() {
       this.isEditing = false;
-      this.newClient = { client_name: "", email: "", phone: "", country: "" };
+      this.newClient = {
+        client_name: "",
+        email: "",
+        phone: "",
+        country: "",
+        status: false,
+      };
       this.showAddClientModal = true;
     },
     openEditClientModal(item) {
@@ -177,6 +191,7 @@ export default {
           email: this.newClient.email,
           phone: this.newClient.phone,
           country: this.newClient.country,
+          status: this.newClient.status,
           user_id: this.userId,
         })
         .eq("id", this.clientId)
@@ -197,6 +212,7 @@ export default {
           email: this.newClient.email,
           phone: this.newClient.phone,
           country: this.newClient.country,
+          status: this.newClient.status,
           user_id: this.userId,
         },
       ]);
