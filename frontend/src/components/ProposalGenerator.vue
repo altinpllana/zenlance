@@ -33,6 +33,12 @@
             }"
           >
             <span v-html="message.content"></span>
+            <v-btn
+              @click="copyToClipboard(message.content)"
+              v-if="message.role === 'ai'"
+              class="mt-3"
+              ><v-icon>mdi-content-copy</v-icon></v-btn
+            >
           </div>
 
           <div id="chat-loading-container" v-if="isLoading">
@@ -78,6 +84,17 @@ export default {
     };
   },
   methods: {
+    copyToClipboard(content) {
+      navigator.clipboard
+        .writeText(content)
+        .then(() => {
+          alert("COPIED");
+        })
+        .catch((err) => {
+          console.error("Failed to copy text: ", err);
+        });
+    },
+
     async submitJobDescription() {
       if (!this.jobDescription) {
         alert("Please enter a message.");
@@ -107,7 +124,8 @@ export default {
               { role: "system", content: "You are a helpful assistant." },
               { role: "user", content: userInput },
             ],
-            model: "hf:mistralai/Mistral-7B-Instruct-v0.3",
+            // model: "hf:mistralai/Mistral-7B-Instruct-v0.3",
+            model: "hf:meta-llama/Llama-3.1-405B-Instruct",
           }),
         });
 
@@ -157,6 +175,9 @@ export default {
         /(https?:\/\/[^\s]+)/g,
         '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
       );
+
+      // Make text inside ** bold
+      html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
       return html;
     },

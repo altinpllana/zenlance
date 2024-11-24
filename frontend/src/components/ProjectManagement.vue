@@ -10,25 +10,64 @@
               <template v-slot:[`item.project_name`]="{ item }">
                 <p class="text-start">{{ item.project_name }}</p>
               </template>
+
               <template v-slot:[`item.client`]="{ item }">
                 <p class="text-start">{{ item.client }}</p>
               </template>
+
               <template v-slot:[`item.start_date`]="{ item }">
                 <p class="text-start">{{ item.start_date }}</p>
               </template>
+
               <template v-slot:[`item.end_date`]="{ item }">
                 <p class="text-start">{{ item.end_date }}</p>
               </template>
+
               <template v-slot:[`item.status`]="{ item }">
                 <p class="text-start">{{ item.status }}</p>
               </template>
+
+              <template v-slot:[`item.billing_type`]="{ item }">
+                <p class="text-start">{{ item.billing_type }}</p>
+              </template>
+
+              <template v-slot:[`item.total_rate`]="{ item }">
+                <p class="text-start">
+                  {{
+                    item.billing_type === "Hourly"
+                      ? `$${(item.estimated_hours || 0) * (item.hourly_rate || 0)}`
+                      : `$${item.total_rate || 0}`
+                  }}
+                </p>
+              </template>
+
+              <template v-slot:[`item.estimated_hours`]="{ item }">
+                <p class="text-start">{{ item.estimated_hours }} hrs</p>
+              </template>
+
+              <template v-slot:[`item.hourly_rate`]="{ item }">
+                <p class="text-start">${{ item.hourly_rate }}/hr</p>
+              </template>
+
               <template v-slot:[`item.actions`]="{ item }">
-                <v-btn class="mr-2" icon small @click="openEditProjectModal(item)"
-                  ><v-icon>mdi-pencil</v-icon></v-btn
+                <v-btn
+                  variant="text"
+                  color="blue"
+                  icon
+                  small
+                  @click="openEditProjectModal(item)"
                 >
-                <v-btn icon small @click="confirmDeleteProject(item)"
-                  ><v-icon>mdi-delete</v-icon></v-btn
+                  <v-icon>mdi-square-edit-outline</v-icon>
+                </v-btn>
+                <v-btn
+                  variant="text"
+                  color="red"
+                  icon
+                  small
+                  @click="confirmDeleteProject(item)"
                 >
+                  <v-icon>mdi-delete-outline</v-icon>
+                </v-btn>
               </template>
             </v-data-table>
           </div>
@@ -50,8 +89,9 @@
 
         <v-dialog v-model="showAddProjectModal" max-width="500px">
           <v-card>
-            <v-card-title>Add New Client</v-card-title>
+            <v-card-title>Add New Project</v-card-title>
             <v-card-text>
+              <!-- Project Name -->
               <v-text-field
                 variant="solo"
                 v-model="newProject.project_name"
@@ -59,6 +99,7 @@
                 required
               ></v-text-field>
 
+              <!-- Client Selection -->
               <v-select
                 :items="clients"
                 v-model="newProject.client"
@@ -73,14 +114,13 @@
                 <template #item="{ item, props }">
                   <v-list-item v-bind="props">
                     <template #title>
-                      <span>
-                        {{ item.props.title.client_name }}
-                      </span>
+                      <span>{{ item.props.title.client_name }}</span>
                     </template>
                   </v-list-item>
                 </template>
               </v-select>
 
+              <!-- Start Date -->
               <v-date-input
                 v-model="newProject.start_date"
                 label="Select Start Date"
@@ -99,6 +139,37 @@
                 variant="solo"
                 v-model="newProject.status"
                 label="Status"
+              ></v-text-field>
+
+              <v-select
+                :items="['Fixed', 'Hourly']"
+                v-model="newProject.billing_type"
+                label="Billing Type"
+                variant="solo"
+              ></v-select>
+
+              <v-text-field
+                v-if="newProject.billing_type === 'Fixed'"
+                variant="solo"
+                v-model="newProject.total_rate"
+                label="Total Rate"
+                type="number"
+              ></v-text-field>
+
+              <v-text-field
+                v-if="newProject.billing_type === 'Hourly'"
+                variant="solo"
+                v-model="newProject.estimated_hours"
+                label="Estimated Hours"
+                type="number"
+              ></v-text-field>
+
+              <v-text-field
+                v-if="newProject.billing_type === 'Hourly'"
+                variant="solo"
+                v-model="newProject.hourly_rate"
+                label="Hourly Rate"
+                type="number"
               ></v-text-field>
             </v-card-text>
 
@@ -131,6 +202,10 @@ export default {
         { title: "Start Date", value: "start_date", align: "start" },
         { title: "Deadline", value: "end_date", align: "start" },
         { title: "Status", value: "status", align: "start" },
+        { title: "Billing Type", value: "billing_type", align: "start" },
+        { title: "Total Rate", value: "total_rate", align: "start" },
+        { title: "Estimated Hours", value: "estimated_hours", align: "start" },
+        { title: "Hourly Rate", value: "hourly_rate", align: "start" },
         {
           title: "Actions",
           value: "actions",
@@ -139,17 +214,18 @@ export default {
           width: "200px",
         },
       ],
+
       projects: [],
       showAddProjectModal: false,
       showConfirmDeleteModal: false,
       newProject: {
         project_name: "",
-        client: 1,
-        billing_type: "fixed",
+        client: null,
+        billing_type: "",
         status: "",
-        total_rate: "100",
-        estimated_hours: "10",
-        hourly_rate: "15",
+        total_rate: null,
+        estimated_hours: "",
+        hourly_rate: "",
         start_date: null,
         end_date: null,
         description: "test",

@@ -77,19 +77,20 @@
       <v-col cols="12" xl="6" lg="6" md="6" sm="6" xs="6">
         <div class="card">
           <div class="card-body">
-            <h6 class="total-customers">Projects List</h6>
-            <v-data-table
-              :headers="headersProjects"
-              :items="projects"
-              :items-per-page="5"
-              :hide-default-header="true"
-              :hide-default-footer="true"
-            >
-              <template v-slot:[`item.name`]="{ item }"> {{ item.name }} </template>
-              <template v-slot:[`item.email`]="{ item }">
-                {{ item.email }}
+            <h6 class="total-projects">Projects List</h6>
+            <v-data-table items-per-page="5" :headers="headersProject" :items="projects">
+              <template v-slot:[`item.project_name`]="{ item }">
+                <p class="text-start">{{ item.project_name }}</p>
               </template>
-              <template v-slot:[`item.price`]="{ item }"> ${{ item.price }} </template>
+              <template v-slot:[`item.client`]="{ item }">
+                <p class="text-start">{{ item.client }}</p>
+              </template>
+              <template v-slot:[`item.start_date`]="{ item }">
+                <p class="text-start">{{ item.start_date }}</p>
+              </template>
+              <template v-slot:[`item.end_date`]="{ item }">
+                <p class="text-start">{{ item.end_date }}</p>
+              </template>
             </v-data-table>
           </div>
         </div>
@@ -149,10 +150,11 @@ export default {
   name: "Dashboard",
   data() {
     return {
-      headers: [
-        { text: "Project Name", value: "project-name" },
-        { text: "Project", value: "project" },
-        { text: "Price", value: "price" },
+      headersProject: [
+        { title: "Project Name", value: "project_name" },
+        { title: "Client", value: "client" },
+        { title: "Start Date", value: "start_date" },
+        { title: "End Date", value: "end_date" },
       ],
       headersClients: [
         { title: "Name", value: "client_name", align: "start" },
@@ -167,6 +169,7 @@ export default {
       ongoingTasks: 0,
       totalProjects: 0,
       clients: [],
+      projects: [],
     };
   },
 
@@ -180,6 +183,7 @@ export default {
       this.fetchOngoingTasks();
       this.fetchClients();
       this.fetchTotalProjects();
+      this.fetchProjects();
     }
   },
 
@@ -206,6 +210,21 @@ export default {
         console.error("Error fetching passwords:", error);
       } else {
         this.clients = data;
+      }
+    },
+
+    async fetchProjects() {
+      if (!this.userId) return;
+
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("user_id", this.userId);
+
+      if (error) {
+        console.error("Error fetching passwords:", error);
+      } else {
+        this.projects = data;
       }
     },
 
