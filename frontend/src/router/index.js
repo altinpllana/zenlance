@@ -62,6 +62,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/invoices",
+    name: "Invoices",
+    component: () => import("@/views/InvoicesView.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/login",
     name: "Login",
     component: () => import("@/views/Login.vue"),
@@ -106,4 +112,3 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router;
-
