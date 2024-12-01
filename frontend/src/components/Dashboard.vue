@@ -43,7 +43,7 @@
             <div class="icon-box mt-1 mb-4">
               <v-icon color="#08090a">mdi-checkbox-multiple-marked-outline</v-icon>
             </div>
-            <h3 class="total-customers">Ongoing Tasks</h3>
+            <h3 class="total-customers">Total Tasks</h3>
             <h1 class="total-customers-counter">{{ ongoingTasks }}</h1>
           </div>
         </div>
@@ -53,7 +53,12 @@
         <div class="card">
           <div class="card-body">
             <h6 class="total-clients">Clients List</h6>
-            <v-data-table items-per-page="5" :headers="headersClients" :items="clients">
+            <v-data-table
+              hide-default-footer
+              items-per-page="5"
+              :headers="headersClients"
+              :items="clients"
+            >
               <template v-slot:[`item.client_name`]="{ item }">
                 <p class="text-start">{{ item.client_name }}</p>
               </template>
@@ -78,7 +83,12 @@
         <div class="card">
           <div class="card-body">
             <h6 class="total-projects">Projects List</h6>
-            <v-data-table items-per-page="5" :headers="headersProject" :items="projects">
+            <v-data-table
+              hide-default-footer
+              items-per-page="5"
+              :headers="headersProject"
+              :items="projects"
+            >
               <template v-slot:[`item.project_name`]="{ item }">
                 <p class="text-start">{{ item.project_name }}</p>
               </template>

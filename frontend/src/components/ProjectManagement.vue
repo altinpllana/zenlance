@@ -6,7 +6,11 @@
 
         <div class="card mt-4">
           <div class="card-body">
-            <v-data-table :headers="headers" :items="projects">
+            <v-data-table show-select :headers="headers" :items="projects">
+              <template v-slot:[`item.id`]="{ item }">
+                <p class="text-start">{{ item.id }}</p>
+              </template>
+
               <template v-slot:[`item.project_name`]="{ item }">
                 <p class="text-start">{{ item.project_name }}</p>
               </template>
@@ -197,6 +201,7 @@ export default {
   data() {
     return {
       headers: [
+        { title: "ID", value: "id", align: "start", width: "50" },
         { title: "Project Name", value: "project_name", align: "start" },
         { title: "Client", value: "client", align: "start" },
         { title: "Start Date", value: "start_date", align: "start" },

@@ -52,19 +52,26 @@
       <div class="user-info">
         <v-list-item
           lines="two"
-          prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
+          prepend-avatar="@/assets/avatar.jpg"
           :title="this.userInfo?.user_metadata.name"
         ></v-list-item>
       </div>
-      <v-btn icon class="bg-white" @click="logOut()"
+      <v-btn variant="text" icon color="primary" @click="logOut()"
         ><v-icon class="ml-2" icon="mdi-exit-to-app"></v-icon
       ></v-btn>
     </v-app-bar>
 
     <v-main>
-      <transition name="fade" mode="out-in">
+      <transition name="slide-fade" mode="out-in">
         <router-view></router-view>
       </transition>
+
+      <p class="text-center text-muted mt-5">
+        Made with ❤️ by
+        <a class="text-decoration-none text-black" href="https://bombstart.tech/"
+          >Bombstart.tech</a
+        >
+      </p>
     </v-main>
   </v-app>
 </template>
@@ -77,7 +84,7 @@ import { supabase } from "@/services/supabaseClient";
 export default {
   components: { PersonalDetailsModal },
   data: () => ({
-    drawer: null,
+    drawer: true,
     items: [
       { text: "Dashboard", icon: "mdi-view-dashboard-outline", link: "/dashboard" },
       {
@@ -96,11 +103,7 @@ export default {
         link: "/client-management",
       },
       { text: "Tasks", icon: "mdi-checkbox-multiple-marked-outline", link: "/tasks" },
-      {
-        text: "Profile Optimization",
-        icon: "mdi-account-circle-outline",
-        link: "/profile-optimization",
-      },
+      //{ text: "Profile Optimization", icon: "mdi-account-circle-outline", link: "/profile-optimization" },
       {
         text: "Password Manager",
         icon: "mdi-lock-check-outline",
@@ -162,5 +165,18 @@ export default {
 
 .quick-action:hover {
   padding: 0px;
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth ease */
+}
+.slide-fade-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
 }
 </style>

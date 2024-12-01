@@ -2,25 +2,13 @@
   <v-container class="fill-height" fluid>
     <v-row class="d-flex justify-center align-center text-center">
       <v-col cols="12" xl="8" lg="8" md="8" sm="10" xs="10" v-if="!hasResponse">
-        <h3>Start winning jobs</h3>
-        <v-row class="mt-5 mb-5">
-          <v-col cols="4" v-for="i in 3" :key="i">
-            <div class="card">
-              <div class="card-body">
-                <div class="icon text-start mb-3">
-                  <v-icon class="text-muted">mdi-comment-question-outline</v-icon>
-                </div>
-                <div class="text text-start">How to win jobs on Upwork?</div>
-              </div>
-            </div>
-          </v-col>
-          <v-col cols="12">
-            <p class="text">65% more chances to win the job.</p>
-          </v-col>
-        </v-row>
+        <h1>Start winning jobs</h1>
+        <p class="text">
+          Paste the job details into the AI Proposal Generator and let it craft a
+          personalized, professional proposal in seconds.
+        </p>
       </v-col>
 
-      <!-- Chat Interface -->
       <v-col cols="12" xl="8" lg="8" md="8" sm="10" xs="10">
         <div class="chat-container">
           <div
@@ -34,6 +22,9 @@
           >
             <span v-html="message.content"></span>
             <v-btn
+              icon
+              small
+              variant="text"
               @click="copyToClipboard(message.content)"
               v-if="message.role === 'ai'"
               class="mt-3"

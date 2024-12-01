@@ -1,27 +1,53 @@
 <template>
   <v-container class="mt-2">
+    <v-snackbar color="primary" v-model="snackbar.show">
+      {{ snackbar.text }}
+    </v-snackbar>
     <v-row justify="center">
       <v-col cols="12" align="end">
         <v-btn color="primary" @click="openAddPasswordModal">Add New Password</v-btn>
 
         <div class="card mt-4">
           <div class="card-body">
-            <v-data-table :headers="headers" :items="passwords">
+            <v-data-table show-select :headers="headers" :items="passwords">
+              <template v-slot:[`item.id`]="{ item }">
+                <p class="text-start">
+                  {{ item.id }}
+                </p>
+              </template>
               <template v-slot:[`item.url`]="{ item }">
-                <p class="text-start">{{ item.url }}</p>
+                <p class="text-start" @click="copyToClipboard(item.url)">
+                  {{ item.url }}
+                </p>
               </template>
               <template v-slot:[`item.username`]="{ item }">
-                <p class="text-start">{{ item.username }}</p>
+                <p class="text-start" @click="copyToClipboard(item.username)">
+                  {{ item.username }}
+                </p>
               </template>
               <template v-slot:[`item.password`]="{ item }">
-                <p class="text-start">{{ item.password }}</p>
+                <p class="text-start" @click="copyToClipboard(item.password)">
+                  {{ maskPassword(item.password) }}
+                </p>
               </template>
+
               <template v-slot:[`item.actions`]="{ item }">
-                <v-btn class="mr-2" icon small @click="editPassword(item)"
-                  ><v-icon>mdi-pencil</v-icon></v-btn
+                <v-btn
+                  class="mr-2"
+                  variant="text"
+                  color="blue"
+                  icon
+                  small
+                  @click="editPassword(item)"
+                  ><v-icon>mdi-square-edit-outline</v-icon></v-btn
                 >
-                <v-btn icon small @click="confirmDeletePassword(item)"
-                  ><v-icon>mdi-delete</v-icon></v-btn
+                <v-btn
+                  variant="text"
+                  color="red"
+                  icon
+                  small
+                  @click="confirmDeletePassword(item)"
+                  ><v-icon>mdi-delete-outline</v-icon></v-btn
                 >
               </template>
             </v-data-table>
@@ -62,9 +88,9 @@
                 label="Password"
                 variant="solo"
                 v-model="newPassword.password"
-                :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
                 :type="showPassword ? 'text' : 'password'"
-                @click:append="showPassword = !showPassword"
+                @click:append-inner="showPassword = !showPassword"
               ></v-text-field>
 
               <v-btn text color="primary" @click="generatePassword"
@@ -104,6 +130,7 @@ export default {
   data() {
     return {
       headers: [
+        { title: "ID", value: "id", align: "start", width: "50" },
         { title: "URL", value: "url", align: "start" },
         { title: "Username", value: "username" },
         { title: "Password", value: "password" },
@@ -115,6 +142,10 @@ export default {
           width: "200px",
         },
       ],
+      snackbar: {
+        show: false,
+        text: "",
+      },
       passwords: [],
       showAddPasswordModal: false,
       showConfirmDeleteModal: false,
@@ -143,6 +174,22 @@ export default {
     }
   },
   methods: {
+    maskPassword(password) {
+      return "*".repeat(password.length);
+    },
+
+    copyToClipboard(text) {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          this.snackbar.show = true;
+          this.snackbar.text = "Copied to Clipboard";
+        })
+        .catch((err) => {
+          console.error("Failed to copy text: ", err);
+        });
+    },
+
     async fetchPasswords() {
       if (!this.userId) return;
 
@@ -239,7 +286,7 @@ export default {
     },
     confirmDeletePassword(item) {
       this.passwordToDelete = item;
-      this.showConfirmDeleteModal = true; 
+      this.showConfirmDeleteModal = true;
     },
     async deletePassword() {
       if (this.passwordToDelete) {
@@ -247,7 +294,7 @@ export default {
           .from("password_manager")
           .delete()
           .eq("id", this.passwordToDelete.id)
-          .eq("user_id", this.userId); 
+          .eq("user_id", this.userId);
 
         if (error) {
           console.error("Error deleting password:", error);
@@ -264,4 +311,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.text-start {
+  cursor: pointer;
+}
+</style>

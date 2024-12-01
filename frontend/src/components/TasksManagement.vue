@@ -33,10 +33,52 @@
       width="700"
     >
       <v-container v-if="selectedTask">
-        <h4 class="task-name">{{ selectedTask.task_name }}</h4>
-        <span class="task-status">
+        <div class="d-flex justify-space-between">
+          <v-col cols="6">
+            <h4 class="task-name">{{ selectedTask.task_name }}</h4>
+          </v-col>
+
+          <v-col cols="6">
+            <v-btn
+              variant="text"
+              color="red"
+              icon
+              small
+              @click="deleteTask(selectedTask.id)"
+            >
+              <v-icon>mdi-delete-outline</v-icon>
+            </v-btn>
+          </v-col>
+        </div>
+        <div class="task-status">
           Status <span class="ml-2 badge bg-primary">{{ selectedTask.task_status }}</span>
-        </span>
+        </div>
+
+        <div class="task-status mt-3">
+          Priority
+          <span v-if="selectedTask.priority == 'low'" class="ml-2 badge bg-green">{{
+            selectedTask.priority
+          }}</span>
+
+          <span
+            v-if="selectedTask.priority == 'normal'"
+            class="ml-2 badge bg-blue text-white"
+            >{{ selectedTask.priority }}</span
+          >
+
+          <span
+            v-if="selectedTask.priority == 'high'"
+            class="ml-2 badge bg-orange text-white"
+            >{{ selectedTask.priority }}</span
+          >
+
+          <span
+            v-if="selectedTask.priority == 'urgent'"
+            class="ml-2 badge bg-red text-white"
+            >{{ selectedTask.priority }}</span
+          >
+        </div>
+
         <div class="task-description mt-4">
           <v-textarea
             variant="solo"
@@ -85,6 +127,21 @@
               ></v-select>
             </v-col>
           </v-row>
+
+          <v-row>
+            <v-col cols="6">
+              <v-switch inset v-model="isRelatedToClient" label="Related to Client?"></v-switch>
+            </v-col>
+
+            <v-col cols="6">
+              <v-select
+                :label="isRelatedToClient ? 'Select Client' : 'Select Project'"
+                v-model="newTask.relatedEntity"
+                :items="isRelatedToClient ? clientOptions : projectOptions"
+                required
+              ></v-select>
+            </v-col>
+          </v-row>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -103,6 +160,7 @@ export default {
   data() {
     return {
       showAddTaskModal: false,
+      isRelatedToClient: true, // Toggle state
       newTask: {
         task_name: "",
         task_description: "",
@@ -119,7 +177,9 @@ export default {
         Done: [],
       },
       taskDetailsDrawer: false,
-      selectedTask: null, // To hold the selected task details
+      selectedTask: null,
+      clientOptions: ['Client A', 'Client B', 'Client C'], // Sample client options
+      projectOptions: ['Project X', 'Project Y', 'Project Z'], // Sample project options
     };
   },
   async created() {
@@ -194,6 +254,11 @@ export default {
         }
       }
     },
+
+    deleteTask(id) {
+      alert("id", id);
+    },
+
     openAddTaskModal(status) {
       this.newTask = {
         task_name: "",

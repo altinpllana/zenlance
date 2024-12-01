@@ -6,7 +6,12 @@
 
         <div class="card mt-4">
           <div class="card-body">
-            <v-data-table :headers="headers" :items="clients">
+            <v-data-table show-select :headers="headers" :items="clients">
+              <template v-slot:[`item.id`]="{ item }">
+                <p class="text-start">
+                  {{ item.id }}
+                </p>
+              </template>
               <template v-slot:[`item.client_name`]="{ item }">
                 <p class="text-start">{{ item.client_name }}</p>
               </template>
@@ -28,11 +33,22 @@
                 <p class="text-start">{{ item.created_at }}</p>
               </template>
               <template v-slot:[`item.actions`]="{ item }">
-                <v-btn class="mr-2" icon small @click="openEditClientModal(item)"
-                  ><v-icon>mdi-pencil</v-icon></v-btn
+                <v-btn
+                  variant="text"
+                  class="mr-2"
+                  color="blue"
+                  icon
+                  small
+                  @click="openEditClientModal(item)"
+                  ><v-icon>mdi-square-edit-outline</v-icon></v-btn
                 >
-                <v-btn icon small @click="confirmDeleteClient(item)"
-                  ><v-icon>mdi-delete</v-icon></v-btn
+                <v-btn
+                  variant="text"
+                  color="red"
+                  icon
+                  small
+                  @click="confirmDeleteClient(item)"
+                  ><v-icon>mdi-delete-outline</v-icon></v-btn
                 >
               </template>
             </v-data-table>
@@ -109,6 +125,7 @@ export default {
   data() {
     return {
       headers: [
+        { title: "ID", value: "id", align: "start", width: "50" },
         { title: "Name", value: "client_name", align: "start" },
         { title: "Email", value: "email", align: "start" },
         { title: "Phone", value: "phone", align: "start" },

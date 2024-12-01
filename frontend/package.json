@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mdi/font": "7.0.96",
+    "@vueup/vue-quill": "^1.2.0",
     "axios": "^1.6.8",
     "core-js": "^3.29.0",
     "openai": "^4.72.0",
