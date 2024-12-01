@@ -64,20 +64,9 @@
                   <v-text-field label="Your Name" variant="solo" dense></v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Store Name" variant="solo" dense></v-text-field>
-                </v-col>
-                <v-col cols="12" md="6">
                   <v-select
                     label="Location"
                     :items="['United States', 'India', 'Canada']"
-                    variant="solo"
-                    dense
-                  ></v-select>
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-select
-                    label="Currency"
-                    :items="['US Dollar ($)', 'Euro (€)', 'INR (₹)']"
                     variant="solo"
                     dense
                   ></v-select>
@@ -87,9 +76,6 @@
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field label="Phone" variant="solo" dense></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field label="Address" variant="solo" dense></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>
