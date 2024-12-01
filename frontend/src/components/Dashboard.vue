@@ -180,6 +180,10 @@ export default {
       totalProjects: 0,
       clients: [],
       projects: [],
+      calendarEvents: [
+        { name: "Event 1", start: "2024-12-02", end: "2024-12-02" },
+        { name: "Event 2", start: "2024-12-03", end: "2024-12-04" },
+      ],
     };
   },
 
@@ -194,6 +198,7 @@ export default {
       this.fetchClients();
       this.fetchTotalProjects();
       this.fetchProjects();
+      this.fetchPublicCalendar();
     }
   },
 
@@ -285,6 +290,41 @@ export default {
       } catch (err) {
         console.error("Unexpected error:", err);
       }
+    },
+
+    async fetchPublicCalendar() {
+      const calendarUrl =
+        "https://calendar.google.com/calendar/u/0?cid=cGxsYW5hYWx0aW4zQGdtYWlsLmNvbQ";
+      const response = await fetch(calendarUrl);
+      console.log("event", response);
+      const icsData = await response.text();
+      const events = this.parseICS(icsData);
+      this.calendarEvents = events;
+    },
+    parseICS(icsData) {
+      const events = [];
+      const lines = icsData.split("\n");
+      let event = null;
+
+      lines.forEach((line) => {
+        if (line.startsWith("BEGIN:VEVENT")) {
+          event = {};
+        } else if (line.startsWith("END:VEVENT")) {
+          events.push(event);
+          event = null;
+        } else if (event) {
+          const [key, value] = line.split(":", 2);
+          if (key === "SUMMARY") event.name = value;
+          if (key === "DTSTART") event.start = this.parseDate(value);
+          if (key === "DTEND") event.end = this.parseDate(value);
+        }
+      });
+
+      return events;
+    },
+    parseDate(icsDate) {
+      // Simple function to parse iCal date format
+      return new Date(icsDate.replace(/T/, "").replace(/Z/, ""));
     },
   },
 };
