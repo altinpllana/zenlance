@@ -26,7 +26,6 @@
       </v-col>
     </v-row>
 
-    <!-- Task Details Drawer -->
     <v-navigation-drawer
       v-model="taskDetailsDrawer"
       temporary
@@ -62,17 +61,30 @@
             required
           ></v-text-field>
           <v-textarea
-            label="Description"
+            label="Task Description"
             v-model="newTask.task_description"
             required
           ></v-textarea>
 
-          <v-select
-            label="Select Status"
-            v-model="newTask.task_status"
-            :items="statusOptions"
-            required
-          ></v-select>
+          <v-row>
+            <v-col cols="6">
+              <v-select
+                label="Select Status"
+                v-model="newTask.task_status"
+                :items="statusOptions"
+                required
+              ></v-select>
+            </v-col>
+
+            <v-col cols="6">
+              <v-select
+                label="Priority"
+                v-model="newTask.priority"
+                :items="priorityOptions"
+                required
+              ></v-select>
+            </v-col>
+          </v-row>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -95,8 +107,10 @@ export default {
         task_name: "",
         task_description: "",
         task_status: "to do",
+        priority: "low",
       },
       statusOptions: ["to do", "doing", "review", "done"],
+      priorityOptions: ["low", "normal", "high", "urgent"],
       userId: null,
       columns: {
         "To Do": [],
@@ -184,6 +198,7 @@ export default {
       this.newTask = {
         task_name: "",
         task_description: "",
+        priority: "",
         task_status: status.toLowerCase(),
       };
       this.showAddTaskModal = true;
@@ -202,6 +217,7 @@ export default {
         task_name: this.newTask.task_name,
         task_description: this.newTask.task_description,
         task_status: this.newTask.task_status,
+        priority: this.newTask.priority,
       };
 
       const { data, error } = await supabase.from("tasks").insert([taskData]);
@@ -211,12 +227,15 @@ export default {
       } else {
         const columnKey = this.getColumnKey(this.newTask.task_status);
         if (this.columns[columnKey]) {
+          this.closeAddTaskModal();
+
+          this.fetchTasks();
+
           this.columns[columnKey].push({
             ...taskData,
             id: data[0].id,
           });
         }
-        this.closeAddTaskModal();
       }
     },
   },
@@ -233,5 +252,15 @@ export default {
 }
 .kanban {
   height: 80vh;
+}
+
+.single-task {
+  cursor: pointer;
+  transition: 0.1s ease-in-out all;
+}
+
+.single-task:hover {
+  transform: scale(1.02) rotate(2deg);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 </style>
