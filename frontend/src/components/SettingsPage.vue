@@ -61,10 +61,16 @@
             <v-card-text>
               <v-row>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Your Name" variant="solo" dense></v-text-field>
+                  <v-text-field
+                    label="Your Name"
+                    v-model="user.fullname"
+                    variant="solo"
+                    dense
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-select
+                    v-model="user.location"
                     label="Location"
                     :items="['United States', 'India', 'Canada']"
                     variant="solo"
@@ -72,10 +78,20 @@
                   ></v-select>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Email" variant="solo" dense></v-text-field>
+                  <v-text-field
+                    label="Email"
+                    v-model="user.email"
+                    variant="solo"
+                    dense
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
-                  <v-text-field label="Phone" variant="solo" dense></v-text-field>
+                  <v-text-field
+                    label="Phone"
+                    v-model="user.phone"
+                    variant="solo"
+                    dense
+                  ></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -93,9 +109,45 @@
 </template>
 
 <script>
+import { supabase } from "@/services/supabaseClient";
 export default {
   data() {
-    return {};
+    return {
+      userInfo: null,
+      user: {
+        fullname: "",
+        location: "",
+        email: "",
+        phone: "",
+      },
+    };
+  },
+
+  async created() {
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        console.error("Error fetching user:", error.message);
+        return;
+      }
+
+      if (user) {
+        this.userInfo = user;
+
+        this.user.fullname = user.user_metadata?.name || ""; 
+        this.user.email = user.email || ""; 
+        this.user.phone = user.user_metadata?.phone || "";
+        this.user.location = user.user_metadata?.location || "";
+
+        console.log("Populated user details:", this.user);
+      }
+    } catch (error) {
+      console.error("Error during user data fetch:", error.message);
+    }
   },
 };
 </script>

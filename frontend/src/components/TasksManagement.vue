@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <!-- Task List Section -->
     <v-row class="mt-4">
       <v-col cols="3" v-for="(tasks, status) in columns" :key="status">
         <div class="card kanban">
@@ -26,6 +27,7 @@
       </v-col>
     </v-row>
 
+    <!-- Task Details Drawer -->
     <v-navigation-drawer
       v-model="taskDetailsDrawer"
       temporary
@@ -48,6 +50,15 @@
             >
               <v-icon>mdi-delete-outline</v-icon>
             </v-btn>
+            <v-btn
+              variant="text"
+              color="primary"
+              icon
+              small
+              @click="openEditTaskModal(selectedTask)"
+            >
+              <v-icon>mdi-pencil-outline</v-icon>
+            </v-btn>
           </v-col>
         </div>
         <div class="task-status">
@@ -56,7 +67,7 @@
 
         <div class="task-status mt-3">
           Priority
-          <span v-if="selectedTask.priority == 'low'" class="ml-2 badge bg-green">{{
+          <span v-if="selectedTask.priority == 'Low'" class="ml-2 badge bg-green">{{
             selectedTask.priority
           }}</span>
 
@@ -93,16 +104,19 @@
       </v-container>
     </v-navigation-drawer>
 
+    <!-- Add Task Modal -->
     <v-dialog v-model="showAddTaskModal" max-width="500px">
       <v-card>
         <v-card-title>Add New Task</v-card-title>
         <v-card-text>
           <v-text-field
             label="Task Name"
+            variant="solo"
             v-model="newTask.task_name"
             required
           ></v-text-field>
           <v-textarea
+            variant="solo"
             label="Task Description"
             v-model="newTask.task_description"
             required
@@ -111,6 +125,7 @@
           <v-row>
             <v-col cols="6">
               <v-select
+                variant="solo"
                 label="Select Status"
                 v-model="newTask.task_status"
                 :items="statusOptions"
@@ -120,6 +135,7 @@
 
             <v-col cols="6">
               <v-select
+                variant="solo"
                 label="Priority"
                 v-model="newTask.priority"
                 :items="priorityOptions"
@@ -130,11 +146,17 @@
 
           <v-row>
             <v-col cols="6">
-              <v-switch inset v-model="isRelatedToClient" label="Related to Client?"></v-switch>
+              <v-switch
+                inset
+                color="green"
+                v-model="isRelatedToClient"
+                label="Related to Client?"
+              ></v-switch>
             </v-col>
 
             <v-col cols="6">
               <v-select
+                variant="solo"
                 :label="isRelatedToClient ? 'Select Client' : 'Select Project'"
                 v-model="newTask.relatedEntity"
                 :items="isRelatedToClient ? clientOptions : projectOptions"
@@ -150,6 +172,80 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Edit Task Modal -->
+    <v-dialog v-model="showEditTaskModal" max-width="500px">
+      <v-card>
+        <v-card-title>Edit Task</v-card-title>
+        <v-card-text>
+          <v-text-field
+            label="Task Name"
+            variant="solo"
+            v-model="editTask.task_name"
+            required
+          ></v-text-field>
+          <v-textarea
+            variant="solo"
+            label="Task Description"
+            v-model="editTask.task_description"
+            required
+          ></v-textarea>
+
+          <v-row>
+            <v-col cols="6">
+              <v-select
+                variant="solo"
+                label="Select Status"
+                v-model="editTask.task_status"
+                :items="statusOptions"
+                required
+              ></v-select>
+            </v-col>
+
+            <v-col cols="6">
+              <v-select
+                variant="solo"
+                label="Priority"
+                v-model="editTask.priority"
+                :items="priorityOptions"
+                required
+              ></v-select>
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="6">
+              <v-switch
+                inset
+                color="green"
+                v-model="editTask.isRelatedToClient"
+                label="Related to Client?"
+              ></v-switch>
+            </v-col>
+
+            <v-col cols="6">
+              <v-select
+                variant="solo"
+                :label="editTask.isRelatedToClient ? 'Select Client' : 'Select Project'"
+                v-model="editTask.relatedEntity"
+                :items="editTask.isRelatedToClient ? clientOptions : projectOptions"
+                required
+              ></v-select>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text color="red" @click="closeEditTaskModal">Cancel</v-btn>
+          <v-btn text color="green" @click="saveTaskChanges">Save Changes</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Snackbar for Success Messages -->
+    <v-snackbar color="primary" v-model="snackbar.show" timeout="3000">
+      {{ snackbar.text }}
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -160,15 +256,22 @@ export default {
   data() {
     return {
       showAddTaskModal: false,
+      showEditTaskModal: false,
       isRelatedToClient: true, // Toggle state
       newTask: {
         task_name: "",
         task_description: "",
         task_status: "to do",
-        priority: "low",
+        priority: "Low",
+      },
+      editTask: {
+        task_name: "",
+        task_description: "",
+        task_status: "to do",
+        priority: "Low",
       },
       statusOptions: ["to do", "doing", "review", "done"],
-      priorityOptions: ["low", "normal", "high", "urgent"],
+      priorityOptions: ["Low", "Normal", "High", "Urgent"],
       userId: null,
       columns: {
         "To Do": [],
@@ -178,8 +281,12 @@ export default {
       },
       taskDetailsDrawer: false,
       selectedTask: null,
-      clientOptions: ['Client A', 'Client B', 'Client C'], // Sample client options
-      projectOptions: ['Project X', 'Project Y', 'Project Z'], // Sample project options
+      clientOptions: [], // Dynamically fetched client options
+      projectOptions: ["Project X", "Project Y", "Project Z"], // Sample project options
+      snackbar: {
+        show: false,
+        text: "",
+      },
     };
   },
   async created() {
@@ -189,27 +296,26 @@ export default {
     if (user) {
       this.userId = user.id;
       this.fetchTasks();
+      this.fetchClients(); // Fetch clients from database
     }
   },
   methods: {
-    getColumnKey(status) {
-      switch (status.toLowerCase()) {
-        case "to do":
-          return "To Do";
-        case "doing":
-          return "Doing";
-        case "review":
-          return "Review";
-        case "done":
-          return "Done";
-        default:
-          return "To Do";
+    async fetchClients() {
+      const { data, error } = await supabase
+        .from("clients")
+        .select("id, client_name") // Adjust the fields to match your database
+        .eq("user_id", this.userId); // Add any necessary filters
+
+      if (error) {
+        console.error("Error fetching clients:", error);
+      } else {
+        this.clientOptions = data;
       }
     },
 
     async showTaskDetails(id) {
       this.taskDetailsDrawer = true;
-      this.selectedTask = null; // Clear previous task details
+      this.selectedTask = null;
 
       try {
         const { data, error } = await supabase
@@ -256,21 +362,47 @@ export default {
     },
 
     deleteTask(id) {
-      alert("id", id);
+      supabase
+        .from("tasks")
+        .delete()
+        .eq("id", id)
+        .then(() => {
+          this.fetchTasks(); // Re-fetch tasks after deletion
+          this.selectedTask = null;
+          this.taskDetailsDrawer = false;
+          this.snackbar.text = "Task deleted successfully!";
+          this.snackbar.show = true; // Show the snackbar
+        })
+        .catch((err) => {
+          console.error("Error deleting task:", err);
+          this.snackbar.text = "Failed to delete task!";
+          this.snackbar.show = true;
+        });
     },
 
     openAddTaskModal(status) {
       this.newTask = {
         task_name: "",
         task_description: "",
-        priority: "",
+        priority: "Low",
         task_status: status.toLowerCase(),
       };
       this.showAddTaskModal = true;
     },
+
     closeAddTaskModal() {
       this.showAddTaskModal = false;
     },
+
+    openEditTaskModal(task) {
+      this.editTask = { ...task }; // Set the task to be edited
+      this.showEditTaskModal = true;
+    },
+
+    closeEditTaskModal() {
+      this.showEditTaskModal = false;
+    },
+
     async addTask() {
       if (!this.userId) {
         alert("User ID is not set. Cannot add task without a valid user.");
@@ -289,43 +421,47 @@ export default {
 
       if (error) {
         console.error("Error adding task:", error);
+        this.snackbar.text = "Failed to add task!";
+        this.snackbar.show = true;
       } else {
         const columnKey = this.getColumnKey(this.newTask.task_status);
         if (this.columns[columnKey]) {
           this.closeAddTaskModal();
-
           this.fetchTasks();
-
           this.columns[columnKey].push({
             ...taskData,
             id: data[0].id,
           });
+          this.snackbar.text = "Task added successfully!";
+          this.snackbar.show = true;
         }
+      }
+    },
+
+    async saveTaskChanges() {
+      if (!this.selectedTask) return;
+
+      const taskData = {
+        ...this.selectedTask,
+        ...this.editTask,
+      };
+
+      const { data, error } = await supabase
+        .from("tasks")
+        .update(taskData)
+        .eq("id", this.selectedTask.id);
+
+      if (error) {
+        console.error("Error updating task:", error);
+        this.snackbar.text = "Failed to update task!";
+        this.snackbar.show = true;
+      } else {
+        this.selectedTask = data[0];
+        this.closeEditTaskModal();
+        this.snackbar.text = "Task updated successfully!";
+        this.snackbar.show = true;
       }
     },
   },
 };
 </script>
-
-<style scoped>
-.v-card-title {
-  font-weight: bold;
-  text-align: center;
-}
-.v-card {
-  min-height: 300px;
-}
-.kanban {
-  height: 80vh;
-}
-
-.single-task {
-  cursor: pointer;
-  transition: 0.1s ease-in-out all;
-}
-
-.single-task:hover {
-  transform: scale(1.02) rotate(2deg);
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-}
-</style>

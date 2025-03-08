@@ -88,7 +88,7 @@ export default {
     items: [
       { text: "Dashboard", icon: "mdi-view-dashboard-outline", link: "/dashboard" },
       {
-        text: "Proposal Generator",
+        text: "AI Proposal Generator",
         icon: "mdi-square-edit-outline",
         link: "/proposal-generator",
       },

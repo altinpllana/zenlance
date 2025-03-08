@@ -22,13 +22,12 @@
           >
             <span v-html="message.content"></span>
             <v-btn
-              icon
               small
-              variant="text"
+              color="primary"
               @click="copyToClipboard(message.content)"
               v-if="message.role === 'ai'"
               class="mt-3"
-              ><v-icon>mdi-content-copy</v-icon></v-btn
+              >copy</v-btn
             >
           </div>
 
@@ -44,18 +43,19 @@
         </div>
       </v-col>
 
-      <!-- Input Field -->
       <v-col cols="12" xl="8" lg="8" md="8" sm="10" xs="10" class="d-flex align-center">
         <v-textarea
+          :disabled="isLoading"
           rows="1"
           v-model="jobDescription"
           variant="solo"
-          label="Type your message"
+          auto-grow
+          label="Type your work description"
           @keydown.enter="submitJobDescription"
         >
           <template v-slot:append>
             <v-btn color="primary" icon @click="submitJobDescription">
-              <v-icon>mdi-arrow-up</v-icon>
+              <v-icon>mdi-creation</v-icon>
             </v-btn>
           </template>
         </v-textarea>
@@ -112,7 +112,11 @@ export default {
           },
           body: JSON.stringify({
             messages: [
-              { role: "system", content: "You are a helpful assistant." },
+              {
+                role: "system",
+                content:
+                  "You are a helpful assistant that helps creating Winning Job Proposals by analyzing user input. Make it shorter, readable by using bullet points.",
+              },
               { role: "user", content: userInput },
             ],
             // model: "hf:mistralai/Mistral-7B-Instruct-v0.3",
@@ -146,29 +150,24 @@ export default {
       // Convert plain text to HTML
       let html = text
         .split("\n") // Split text by newlines
-        .map((line) => {
-          // Format bullet points
-          if (line.startsWith("-") || line.startsWith("*")) {
-            return `<li>${line.substring(1).trim()}</li>`;
+        .map((line, index, array) => {
+          // Format bullet points as user-friendly bullet symbols
+          if (line.startsWith("•")) {
+            return `• ${line.substring(1).trim()}`;
           }
-          // Return as paragraph
-          return `<p>${line}</p>`;
+          // Format bold text
+          line = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+          // Return as paragraph for other lines
+          return `<p>${line.trim()}</p>`;
         })
         .join("");
 
-      // Wrap bullet points in <ul> if they exist
-      if (html.includes("<li>")) {
-        html = html.replace(/(<li>.*<\/li>)/g, "<ul>$1</ul>");
-      }
-
-      // Convert URLs into clickable links
+      // Convert URLs into clickable links (without exposing raw HTML)
       html = html.replace(
         /(https?:\/\/[^\s]+)/g,
         '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
       );
-
-      // Make text inside ** bold
-      html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
       return html;
     },
@@ -197,7 +196,7 @@ export default {
 .user-message {
   background-color: #08090a;
   align-self: flex-end;
-  text-align: right;
+  text-align: left;
   color: #fff;
 }
 

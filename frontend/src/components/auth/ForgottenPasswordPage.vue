@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import router from "@/router";
 import { supabase } from "@/services/supabaseClient";
 
 export default {
@@ -45,10 +46,14 @@ export default {
     };
   },
   methods: {
+    login() {
+      router.push("/register");
+    },
+
     async forgotPassword() {
       try {
         const { error } = await supabase.auth.api.resetPasswordForEmail(this.email, {
-          redirectTo: "http://localhost:3000/reset-password", // Update for your reset password page
+          redirectTo: "http://localhost:3000/reset-password",
         });
 
         if (error) {
@@ -69,5 +74,4 @@ export default {
 </script>
 
 <style scoped>
-/* Add your component styles here */
 </style>

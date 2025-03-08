@@ -27,10 +27,6 @@
                 <p class="text-start">{{ item.end_date }}</p>
               </template>
 
-              <template v-slot:[`item.status`]="{ item }">
-                <p class="text-start">{{ item.status }}</p>
-              </template>
-
               <template v-slot:[`item.billing_type`]="{ item }">
                 <p class="text-start">{{ item.billing_type }}</p>
               </template>
@@ -139,12 +135,6 @@
                 variant="solo"
               ></v-date-input>
 
-              <v-text-field
-                variant="solo"
-                v-model="newProject.status"
-                label="Status"
-              ></v-text-field>
-
               <v-select
                 :items="['Fixed', 'Hourly']"
                 v-model="newProject.billing_type"
@@ -206,7 +196,6 @@ export default {
         { title: "Client", value: "client", align: "start" },
         { title: "Start Date", value: "start_date", align: "start" },
         { title: "Deadline", value: "end_date", align: "start" },
-        { title: "Status", value: "status", align: "start" },
         { title: "Billing Type", value: "billing_type", align: "start" },
         { title: "Total Rate", value: "total_rate", align: "start" },
         { title: "Estimated Hours", value: "estimated_hours", align: "start" },
@@ -227,8 +216,7 @@ export default {
         project_name: "",
         client: null,
         billing_type: "",
-        status: "",
-        total_rate: null,
+        total_rate: "",
         estimated_hours: "",
         hourly_rate: "",
         start_date: null,
@@ -270,6 +258,10 @@ export default {
       }
     },
 
+    isValidNumber(value) {
+      return value !== "" && value !== null && !isNaN(value);
+    },
+
     async fetchClients() {
       const { data, error } = await supabase
         .from("clients")
@@ -280,14 +272,6 @@ export default {
         console.error("Error fetching clients:", error);
       } else {
         this.clients = data;
-        // for (let $i = 0; data.length > 0; $i++) {
-        //   this.clients.push({
-        //     text: data[$i].client_name,
-        //     value: data[$i].id,
-        //   });
-
-        //   console.log(this.clients);
-        // }
       }
     },
 
@@ -297,7 +281,6 @@ export default {
       //   project_name: "",
       //   client: null,
       //   billing_type: "",
-      //   status: "",
       //   total_rate: "",
       //   estimated_hours: "",
       //   hourly_rate: "",
@@ -322,13 +305,45 @@ export default {
     },
 
     async updateProject() {
+      // Debugging: log the initial values of newProject
+      console.log("Updating Project:", this.newProject);
+
+      // Validate total_rate for 'Fixed' billing type
+      if (this.newProject.billing_type === "Fixed") {
+        if (this.newProject.total_rate === "" || isNaN(this.newProject.total_rate)) {
+          this.newProject.total_rate = null; // set to null if invalid
+        } else {
+          this.newProject.total_rate = parseFloat(this.newProject.total_rate); // ensure it's a valid number
+        }
+      }
+
+      // Validate estimated_hours and hourly_rate for 'Hourly' billing type
+      if (this.newProject.billing_type === "Hourly") {
+        if (
+          this.newProject.estimated_hours === "" ||
+          isNaN(this.newProject.estimated_hours)
+        ) {
+          this.newProject.estimated_hours = null; // set to null if invalid
+        } else {
+          this.newProject.estimated_hours = parseFloat(this.newProject.estimated_hours); // ensure it's a valid number
+        }
+
+        if (this.newProject.hourly_rate === "" || isNaN(this.newProject.hourly_rate)) {
+          this.newProject.hourly_rate = null; // set to null if invalid
+        } else {
+          this.newProject.hourly_rate = parseFloat(this.newProject.hourly_rate); // ensure it's a valid number
+        }
+      }
+
+      // Debugging: log the values after validation
+      console.log("Validated Project Data:", this.newProject);
+
       const { error } = await supabase
         .from("projects")
         .update({
           project_name: this.newProject.project_name,
           client: this.newProject.client,
           billing_type: this.newProject.billing_type,
-          status: this.newProject.status,
           total_rate: this.newProject.total_rate,
           estimated_hours: this.newProject.estimated_hours,
           hourly_rate: this.newProject.hourly_rate,
@@ -341,20 +356,52 @@ export default {
         .eq("user_id", this.userId);
 
       if (error) {
-        console.error("Error updating password:", error);
+        console.error("Error updating project:", error);
       } else {
         this.CloseEditProjectModal();
         this.fetchProjects();
       }
     },
-
     async saveProject() {
+      // Debugging: log the initial values of newProject
+      console.log("Saving Project:", this.newProject);
+
+      // Ensure 'total_rate' is a valid number or set to null for 'Fixed' billing type
+      if (this.newProject.billing_type === "Fixed") {
+        if (this.newProject.total_rate === "" || isNaN(this.newProject.total_rate)) {
+          this.newProject.total_rate = null; // set to null if invalid
+        } else {
+          this.newProject.total_rate = parseFloat(this.newProject.total_rate); // ensure it's a valid number
+        }
+      }
+
+      // Ensure 'estimated_hours' and 'hourly_rate' are valid numbers or set to null for 'Hourly' billing type
+      if (this.newProject.billing_type === "Hourly") {
+        if (
+          this.newProject.estimated_hours === "" ||
+          isNaN(this.newProject.estimated_hours)
+        ) {
+          this.newProject.estimated_hours = null; // set to null if invalid
+        } else {
+          this.newProject.estimated_hours = parseFloat(this.newProject.estimated_hours); // ensure it's a valid number
+        }
+
+        if (this.newProject.hourly_rate === "" || isNaN(this.newProject.hourly_rate)) {
+          this.newProject.hourly_rate = null; // set to null if invalid
+        } else {
+          this.newProject.hourly_rate = parseFloat(this.newProject.hourly_rate); // ensure it's a valid number
+        }
+      }
+
+      // Debugging: log the values after validation
+      console.log("Validated Project Data:", this.newProject);
+
+      // Proceed with inserting into Supabase
       const { data, error } = await supabase.from("projects").insert([
         {
           project_name: this.newProject.project_name,
           client: this.newProject.client,
           billing_type: this.newProject.billing_type,
-          status: this.newProject.status,
           total_rate: this.newProject.total_rate,
           estimated_hours: this.newProject.estimated_hours,
           hourly_rate: this.newProject.hourly_rate,
@@ -366,12 +413,13 @@ export default {
       ]);
 
       if (error) {
-        console.error("Error saving password:", error);
+        console.error("Error saving project:", error);
       } else {
         this.CloseAddProjectModal();
         this.fetchProjects();
       }
     },
+
     confirmDeleteProject(item) {
       this.projectToDelete = item;
       this.showConfirmDeleteModal = true;
